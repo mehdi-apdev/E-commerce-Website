@@ -1,0 +1,10 @@
+/* public/assets/css/styles.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('./fonts.css'); /* ou toute autre importation */
+
+body {
+  /* styles */
+}

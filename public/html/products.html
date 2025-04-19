@@ -1,0 +1,112 @@
+<!-- public/html/products.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalogue - Amarna</title>
+
+  <link rel="stylesheet" href="/my-eshop/public/assets/css/fonts.css" />
+  <link rel="stylesheet" href="/my-eshop/public/assets/css/tailwind.css" />
+</head>
+<body class="bg-light dark:bg-dark text-gray-800 dark:text-gray-100 font-body">
+  
+  <!-- Header injecté dynamiquement -->
+  <header></header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- BARRE DU HAUT : Titre + Bouton Filtres + Tri -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl md:text-3xl font-bold text-primary">Catalogue</h1>
+      <div class="flex items-center gap-3">
+        <!-- Bouton Show/Hide Filters -->
+        <button
+          id="toggle-filters"
+          class="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium
+                 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600
+                 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
+        >
+          <!-- Icône hamburger -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span>Show Filters</span>
+        </button>
+
+        <!-- Sélecteur de tri -->
+        <div class="relative">
+          <select
+            id="sort"
+            class="appearance-none bg-white dark:bg-zinc-800 border border-gray-300
+                   dark:border-zinc-600 rounded-md py-2 pl-3 pr-8 text-sm focus:outline-none
+                   hover:bg-gray-50 dark:hover:bg-zinc-700 transition"
+          >
+            <option value="created_at_DESC">Nouveautés</option>
+            <option value="price_ASC">Prix croissant</option>
+            <option value="price_DESC">Prix décroissant</option>
+            <option value="name_ASC">Nom (A-Z)</option>
+            <option value="name_DESC">Nom (Z-A)</option>
+          </select>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENEUR GLOBAL : Sidebar filtres + Produits -->
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- SIDEBAR FILTRES -->
+      <aside
+        id="sidebar-filters"
+        class="w-full md:w-64 lg:w-72 bg-white dark:bg-zinc-800 p-4 rounded shadow h-fit"
+      >
+        <h2 class="text-lg font-bold mb-3 text-primary">Filtres</h2>
+        <!-- Le JS products.js insère ici les champs: catégorie, couleur, taille, prix, etc. -->
+        <div id="filters-container" class="space-y-4"></div>
+      </aside>
+
+      <!-- ZONE PRODUITS -->
+      <section class="flex-1">
+        <!-- Grille de produits -->
+        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <!-- Injecté dynamiquement via products.js -->
+        </div>
+
+        <!-- PAGINATION -->
+        <div id="pagination-container" class="flex justify-center mt-8">
+          <!-- Injecté par products.js -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer injecté dynamiquement -->
+  <footer></footer>
+
+  <!-- Scripts -->
+  <script src="/my-eshop/public/assets/js/index.js"></script>
+  <script src="/my-eshop/public/assets/js/products.js"></script>
+  <!-- Petit script pour le toggle du sidebar -->
+  <script>
+    const toggleBtn = document.getElementById('toggle-filters');
+    const sidebar = document.getElementById('sidebar-filters');
+    let filtersVisible = true;
+
+    toggleBtn?.addEventListener('click', () => {
+      filtersVisible = !filtersVisible;
+      if (!filtersVisible) {
+        sidebar.classList.add('hidden');
+        toggleBtn.querySelector('span').textContent = 'Show Filters';
+      } else {
+        sidebar.classList.remove('hidden');
+        toggleBtn.querySelector('span').textContent = 'Hide Filters';
+      }
+    });
+
+    // Réagir au changement de tri
+    document.getElementById('sort')?.addEventListener('change', e => {
+       if (typeof loadProducts === 'function') loadProducts(1);
+    });
+  </script>
+</body>
+</html>

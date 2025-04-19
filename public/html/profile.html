@@ -1,0 +1,63 @@
+<!-- public/html/profile.html -->
+<!DOCTYPE html>
+<html lang="fr" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon profil - Amarna</title>
+  <link rel="stylesheet" href="/my-eshop/public/assets/css/fonts.css" />
+  <link rel="stylesheet" href="/my-eshop/public/assets/css/tailwind.css" />
+</head>
+<body class="bg-light dark:bg-dark text-gray-800 dark:text-gray-100 font-body min-h-screen">
+
+  <header></header>
+
+  <main class="max-w-7xl mx-auto px-4 py-10 space-y-12">
+    <h1 class="text-3xl font-bold text-primary mb-6">Mon compte</h1>
+
+    <!-- Informations personnelles -->
+    <section class="bg-white dark:bg-zinc-800 rounded shadow p-6 border border-gray-200 dark:border-zinc-700">
+      <h2 class="text-xl font-semibold mb-4">Mes informations</h2>
+      <div id="profile-info" class="space-y-2">
+        <p><strong>Nom :</strong> <span id="user-name"></span></p>
+        <p><strong>Email :</strong> <span id="user-email"></span></p>
+        <p><strong>Téléphone :</strong> <span id="user-phone">—</span></p>
+      </div>
+    </section>
+
+    <!-- Historique des commandes -->
+    <section class="bg-white dark:bg-zinc-800 rounded shadow p-6 border border-gray-200 dark:border-zinc-700">
+      <h2 class="text-xl font-semibold mb-4">Mes commandes</h2>
+      <div id="orders-list">
+        <p class="text-gray-600 dark:text-gray-400">Aucune commande trouvée.</p>
+      </div>
+    </section>
+
+    <!-- Adresse de livraison -->
+    <section class="bg-white dark:bg-zinc-800 rounded shadow p-6 border border-gray-200 dark:border-zinc-700">
+      <h2 class="text-xl font-semibold mb-4">Mon adresse</h2>
+      <div id="shipping-address">
+        <p class="text-gray-600 dark:text-gray-400">Aucune adresse renseignée.</p>
+        <button class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark">Ajouter une adresse</button>
+      </div>
+    </section>
+
+    <!-- Mot de passe -->
+    <section class="bg-white dark:bg-zinc-800 rounded shadow p-6 border border-gray-200 dark:border-zinc-700">
+      <h2 class="text-xl font-semibold mb-4">Sécurité</h2>
+      <button class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark">Changer mon mot de passe</button>
+    </section>
+
+    <!-- Déconnexion -->
+    <section class="text-center">
+      <button onclick="logout()" class="text-red-600 dark:text-red-400 font-semibold hover:underline">Se déconnecter</button>
+    </section>
+  </main>
+
+  <footer class="mt-12"></footer>
+
+  <script src="/my-eshop/public/assets/js/index.js"></script>
+  <script src="/my-eshop/public/assets/js/header.js"></script>
+  <script src="/my-eshop/public/assets/js/profile.js"></script>
+</body>
+</html>

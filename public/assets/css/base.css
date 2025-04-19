@@ -1,0 +1,44 @@
+/* Inputs */
+.input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded 
+            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+}
+  .dark .input {
+    @apply border-zinc-700 bg-zinc-800 text-white;
+  }
+  
+  /* Buttons */
+  .btn {
+    @apply inline-block font-medium transition duration-150 ease-in-out;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary text-white py-2 px-4 rounded hover:bg-opacity-90;
+  }
+  
+  .btn-outline {
+    @apply btn border border-primary text-primary hover:bg-primary hover:text-white;
+  }
+  
+  /* Containers */
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+  .section {
+    @apply py-12 md:py-16;
+  }
+  
+  /* Utilities */
+  .text-primary {
+    color: #9c6644;
+  }
+  .bg-primary {
+    background-color: #9c6644;
+  }
+  .bg-secondary {
+    background-color: #EEE8E1;
+  }
+  .dark .bg-secondary {
+    background-color: #6c584c;
+  }
+  

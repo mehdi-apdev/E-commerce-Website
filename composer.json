@@ -1,0 +1,11 @@
+{
+    "name": "my-eshop/project",
+    "description": "E-commerce pour vêtements traditionnels algériens",
+    "type": "project",
+    "autoload": {
+      "psr-4": {
+        "App\\": "app/"
+      }
+    },
+    "require": {}
+}
