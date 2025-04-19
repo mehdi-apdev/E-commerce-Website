@@ -1,4 +1,4 @@
-name: 🚀 Deploy to OVH FTP
+name: 🚀 Deploy Backend & Frontend to OVH
 
 on:
   push:
@@ -7,27 +7,26 @@ on:
 
 jobs:
   ftp-deploy:
-    name: 📦 Déploiement FTP OVH
+    name: 📦 Deploy to OVH via FTP
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Récupération du code
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 🚀 Déploiement FTP
+      - name: 🚀 Upload to OVH (everything except ignored)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /www/public/
+          local-dir: ./ 
+          server-dir: /
           exclude: |
             **/.git*
             **/.github*
             **/node_modules/**
-            **/vendor/**
-            **/.env
             **/docs/**
-            **/database/**
+            **/database/**  # À inclure si tu veux la charger manuellement
+            **/.env
             **/README.md
