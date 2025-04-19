@@ -1,0 +1,61 @@
+# ====================
+# Ignorer Node.js
+# ====================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ====================
+# Ignorer Composer (PHP)
+# ====================
+vendor/
+composer.lock
+
+# ====================
+# Ignorer Tailwind/PostCSS compilés
+# ====================
+public/assets/css/*.css
+public/assets/css/*.css.map
+
+# ====================
+# Ignorer les fichiers d'environnement
+# ====================
+.env
+.env.*
+
+# ====================
+# Ignorer les fichiers systèmes
+# ====================
+.DS_Store
+Thumbs.db
+
+# ====================
+# Ignorer les IDE/éditeurs
+# ====================
+.vscode/
+.idea/
+
+# ====================
+# Ignorer les logs
+# ====================
+logs/
+*.log
+
+# ====================
+# Ignorer les sauvegardes temporaires
+# ====================
+*.bak
+*.tmp
+*.swp
+*~
+
+# ====================
+# Cache de PHPStorm / JetBrains
+# ====================
+.phpstorm.meta.php
+
+# ====================
+# Ignorer les fichiers d’upload (à uploader en FTP uniquement)
+# ====================
+public/uploads/
