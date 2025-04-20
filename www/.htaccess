@@ -1,13 +1,14 @@
-# public/.htaccess
+# www/.htaccess
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Laisser passer les fichiers/dossiers existants
+  # Laisser passer les fichiers et dossiers réels
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
 
-  # Sinon, tout passe par index.php
-  RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
+  # Sinon, redirige vers index.php
+  RewriteRule ^ index.php [QSA,L]
 </IfModule>
+
 

@@ -1,4 +1,4 @@
-// public/assets/js/register.js
+// www/assets/js/register.js
 document.getElementById('registerForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 
@@ -18,7 +18,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
   };
 
   try {
-    const response = await fetch('/my-eshop/public/api/auth/registerPost', {
+    const response = await fetch('/api/auth/registerPost', {
       method: 'POST',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

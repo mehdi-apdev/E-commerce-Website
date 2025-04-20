@@ -13,6 +13,10 @@
  * @param string $path Relative path (ex: 'products', 'assets/css/style.css')
  * @return string Full URL (ex: '/my-eshop/public/products')
  */
+
+ function env(string $key, $default = null) {
+    return $_ENV[$key] ?? $default;
+}
 function url(string $path = ''): string {
     $cleanPath = trim($path, '/');
     

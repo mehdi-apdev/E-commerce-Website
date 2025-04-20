@@ -1,6 +1,7 @@
+// www/assets/js/header.js
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const response = await fetch('/my-eshop/public/api/products', {
+      const response = await fetch('/api/products', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       });
   
@@ -13,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
       products.forEach(product => {
         const imageUrl = product.main_image
-          ? `/my-eshop/public/uploads/products/${product.product_id}/${product.main_image}`
+          ? `/uploads/products/${product.product_id}/${product.main_image}`
           : null;
   
           const tr = document.createElement('tr');
@@ -31,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td class="px-4 py-3 text-sm">${product.price} €</td>
             <td class="px-4 py-3 text-sm">${product.category_name || '-'}</td>
             <td class="px-4 py-3 text-sm space-x-2">
-              <a href="/my-eshop/public/html/admin/products-edit.html?id=${product.product_id}" class="text-blue-500 hover:underline">Modifier</a>
+              <a href="/admin/products-edit.html?id=${product.product_id}" class="text-blue-500 hover:underline">Modifier</a>
               <button class="text-red-500 hover:underline" onclick="deleteProduct(${product.product_id})">Supprimer</button>
             </td>
           `;
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) return;
   
     try {
-      const response = await fetch(`/my-eshop/public/api/products/${productId}`, {
+      const response = await fetch(`/api/products/${productId}`, {
         method: 'DELETE',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       });

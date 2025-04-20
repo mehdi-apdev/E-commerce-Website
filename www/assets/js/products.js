@@ -1,4 +1,4 @@
-// public/assets/js/products.js
+// www/assets/js/products.js
 
 /**
  * Gère l'affichage d'un catalogue de produits avec filtres dynamiques,
@@ -64,7 +64,7 @@ async function loadFilterOptions() {
   if (catSelect) {
     catSelect.innerHTML = '<option value="">Toutes</option>';
     try {
-      const categories = await fetch('/my-eshop/public/api/categories').then(r => r.json());
+      const categories = await fetch('/api/categories').then(r => r.json());
       categories.forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat.category_id;
@@ -82,7 +82,7 @@ async function loadFilterOptions() {
   if (colorSelect) {
     colorSelect.innerHTML = '<option value="">Toutes</option>';
     try {
-      const colors = await fetch('/my-eshop/public/api/colors').then(r => r.json());
+      const colors = await fetch('/api/colors').then(r => r.json());
       colors.forEach(col => {
         const opt = document.createElement('option');
         opt.value = col.color_id;
@@ -100,7 +100,7 @@ async function loadFilterOptions() {
   if (fabricSelect) {
     fabricSelect.innerHTML = '<option value="">Tous</option>';
     try {
-      const fabrics = await fetch('/my-eshop/public/api/fabrics').then(r => r.json());
+      const fabrics = await fetch('/api/fabrics').then(r => r.json());
       fabrics.forEach(fab => {
         const opt = document.createElement('option');
         opt.value = fab.fabric_id;
@@ -118,7 +118,7 @@ async function loadFilterOptions() {
   if (sizeSelect) {
     sizeSelect.innerHTML = '<option value="">Toutes</option>';
     try {
-      const sizes = await fetch('/my-eshop/public/api/sizes').then(r => r.json());
+      const sizes = await fetch('/api/sizes').then(r => r.json());
       sizes.forEach(sz => {
         // Suppose: { size_label: 'M' }
         const opt = document.createElement('option');
@@ -137,7 +137,7 @@ async function loadFilterOptions() {
   if (regionSelect) {
     regionSelect.innerHTML = '<option value="">Toutes</option>';
     try {
-      const regions = await fetch('/my-eshop/public/api/regions').then(r => r.json());
+      const regions = await fetch('/api/regions').then(r => r.json());
       regions.forEach(rg => {
         // Suppose: { region_id, name }
         const opt = document.createElement('option');
@@ -169,7 +169,7 @@ function getFilters() {
 function loadProducts(page = 1) {
   const { category, color, fabric, size, region, orderBy, direction } = getFilters();
 
-  const url = new URL('/my-eshop/public/api/products', window.location.origin);
+  const url = new URL('/api/products', window.location.origin);
   url.searchParams.set('page', page);
   if (category) url.searchParams.set('category', category);
   if (color) url.searchParams.set('color', color);
@@ -221,7 +221,7 @@ function renderProducts(products) {
 
   products.forEach(product => {
     const imagePath = product.main_image
-      ? `/my-eshop/public/uploads/products/${product.product_id}/${product.main_image.trim()}`
+      ? `/uploads/products/${product.product_id}/${product.main_image.trim()}`
       : null;
 
     const card = `
@@ -244,7 +244,7 @@ function renderProducts(products) {
             ${product.price} €
           </p>
           <a
-            href="/my-eshop/public/html/product.html?id=${product.product_id}"
+            href="/product.html?id=${product.product_id}"
             class="text-sm underline text-primary"
           >
             Voir

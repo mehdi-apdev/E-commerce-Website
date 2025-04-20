@@ -1,3 +1,4 @@
+// www/assets/js/header.js
 async function renderHeaderLinks() {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -5,7 +6,7 @@ async function renderHeaderLinks() {
   let user = null;
 
   try {
-    const response = await fetch('/my-eshop/public/api/auth/me', {
+    const response = await fetch('/api/auth/me', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -26,8 +27,8 @@ async function renderHeaderLinks() {
   }
 
   let links = `
-    <a href="/my-eshop/public/html/index.html" class="hover:text-primary transition">Accueil</a>
-    <a href="/my-eshop/public/html/products.html" class="hover:text-primary transition">Produits</a>
+    <a href="/index.html" class="hover:text-primary transition">Accueil</a>
+    <a href="/products.html" class="hover:text-primary transition">Produits</a>
   `;
 
   if (user) {
@@ -36,21 +37,21 @@ async function renderHeaderLinks() {
         <button class="hover:text-primary transition">${user.first_name} ${user.last_name}</button>
         <div class="absolute hidden group-hover:block right-0 bg-white dark:bg-zinc-800 rounded shadow-lg z-10">
           ${user.role === 'admin' ? `
-          <a href="/my-eshop/public/html/admin/dashboard.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700">Admin</a>` : ''}
-          <a href="/my-eshop/public/html/profile.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700">Profil</a>
+          <a href="/admin/dashboard.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700">Admin</a>` : ''}
+          <a href="/profile.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700">Profil</a>
           <button onclick="logout()" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 w-full text-left">Déconnexion</button>
         </div>
       </div>
     `;
   } else {
     links += `
-      <a href="/my-eshop/public/html/login.html" class="hover:text-primary transition">Connexion</a>
-      <a href="/my-eshop/public/html/register.html" class="hover:text-primary transition">Inscription</a>
+      <a href="/login.html" class="hover:text-primary transition">Connexion</a>
+      <a href="/register.html" class="hover:text-primary transition">Inscription</a>
     `;
   }
 
   links += `
-    <a href="/my-eshop/public/html/cart.html" class="relative hover:text-primary transition">
+    <a href="/cart.html" class="relative hover:text-primary transition">
       <i class="bi bi-cart"></i>
       <span class="ml-1">Panier</span>
       <span class="absolute -top-2 -right-4 bg-secondary dark:bg-primary text-xs rounded-full px-2 py-1 leading-none">
@@ -80,7 +81,7 @@ function logout() {
   localStorage.removeItem('user');
 
   // Déconnexion côté serveur
-  fetch('/my-eshop/public/api/auth/logout', {
+  fetch('/api/auth/logout', {
     method: 'POST',
     headers: { 'X-Requested-With': 'XMLHttpRequest' },
   }).finally(() => {

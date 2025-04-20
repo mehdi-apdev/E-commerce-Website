@@ -25,12 +25,19 @@ $path = parse_url($uri, PHP_URL_PATH);
 
 $basePath = '/api'; // Chemin de base de l'API
 $route = str_replace($basePath, '', $path);
+file_put_contents(__DIR__ . '/../debug.log', "Route: " . $route . PHP_EOL, FILE_APPEND);
+
 
 // Réponse JSON par défaut
 header('Content-Type: application/json');
 
 // ROUTEUR API
 switch (true) {
+
+    // 0) HOME
+    case $method === 'GET' && $route === '/home':
+        (new \App\Controllers\HomeController())->index();
+        break;    
 
     // 1) PRODUITS
     case $method === 'GET' && $route === '/products':

@@ -1,8 +1,8 @@
-// public/assets/js/index.js
+// www/assets/js/index.js
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1) Injecte HEADER
-  fetch('/my-eshop/public/html/partials/header.html')
+  fetch('/partials/header.html')
   .then(r => r.text())
   .then(html => {
     const temp = document.createElement('div');
@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('header').replaceWith(newHeader);
 
       // Charger theme-toggle puis header.js
-      loadScript('/my-eshop/public/assets/js/theme-toggle.js', () => {
-        loadScript('/my-eshop/public/assets/js/header.js', () => {
+      loadScript('/assets/js/theme-toggle.js', () => {
+        loadScript('/assets/js/header.js', () => {
           // Ensuite, si on est sur la page d'accueil, on charge les “nouveaux” / “top ventes”
           loadHomeProducts();
         });
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
   // 2) Injecte FOOTER
-  fetch('/my-eshop/public/html/partials/footer.html')
+  fetch('/partials/footer.html')
     .then(res => res.text())
     .then(html => {
       const temp = document.createElement('div');
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!newContainer || !topContainer) return;
 
     // Récupère tous les produits depuis l’API, puis on trie
-    fetch('/my-eshop/public/api/products')
+    fetch('/api/products')
       .then(res => res.json())
       .then(data => {
         const products = data.products || [];
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Génère le HTML d’une carte produit
   function generateProductCard(product, badgeText, dark = false) {
     const imagePath = product.main_image
-      ? `/my-eshop/public/uploads/products/${product.product_id}/${product.main_image.trim()}`
+      ? `/uploads/products/${product.product_id}/${product.main_image.trim()}`
       : null;
 
     const badgeClass = dark
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3 class="text-lg font-semibold mb-1">${product.name}</h3>
           <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">${product.short_description || ''}</p>
           <p class="text-sm font-bold text-primary mb-3">${product.price} €</p>
-          <a href="/my-eshop/public/html/product.html?id=${product.product_id}" class="text-sm underline text-primary">Voir</a>
+          <a href="/product.html?id=${product.product_id}" class="text-sm underline text-primary">Voir</a>
         </div>
       </div>
     `;

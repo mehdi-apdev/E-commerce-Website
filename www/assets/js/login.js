@@ -1,4 +1,4 @@
-// public/assets/js/login.js
+// www/assets/js/login.js
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
   
@@ -14,7 +14,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     };
   
     try {
-      const response = await fetch('/my-eshop/public/api/auth/loginPost', {
+      const response = await fetch('/api/auth/loginPost', {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',

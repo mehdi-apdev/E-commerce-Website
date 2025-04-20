@@ -1,8 +1,8 @@
-// public/assets/js/admin/dashboard.js
+// www/assets/js/admin/dashboard.js
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const response = await fetch('/my-eshop/public/api/admin/dashboard', {
+      const response = await fetch('/api/admin/dashboard', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       });
   

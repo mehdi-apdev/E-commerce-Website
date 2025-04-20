@@ -17,14 +17,14 @@ class HomeController extends BaseController
 
     public function index()
     {
-        // Latest products
+        // Récupère les produits récents
         $latestProducts = $this->productModel->getDetailedProducts([
             'orderBy' => 'p.created_at',
             'direction' => 'DESC',
             'limit' => 5
         ]);
 
-        // Most sold products (assumes we have LEFT JOIN + sales_count calculated in the model)
+        // Récupère les produits les plus vendus
         $topSellingProducts = $this->productModel->getDetailedProducts([
             'orderBy' => 'sales_count',
             'direction' => 'DESC',
@@ -32,10 +32,11 @@ class HomeController extends BaseController
             'includeSales' => true
         ]);
 
-        $this->render('home/index', [
+        // Répond en JSON
+        header('Content-Type: application/json');
+        echo json_encode([
             'latestProducts' => $latestProducts,
-            'topSellingProducts' => $topSellingProducts,
-            'pageTitle' => 'Accueil - ' . SITE_NAME
+            'topSellingProducts' => $topSellingProducts
         ]);
     }
 }

@@ -1,10 +1,10 @@
-// public/assets/js/admin/sidebar.js
+// www/assets/js/admin/sidebar.js
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('admin-sidebar');
     if (!container) return;
   
-    fetch('/my-eshop/public/html/admin/partials/sidebar.html')
+    fetch('/admin/partials/sidebar.html')
       .then(response => response.text())
       .then(html => {
         container.innerHTML = html;
