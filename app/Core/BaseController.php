@@ -1,5 +1,5 @@
 <?php
-// app/core/BaseController.php
+// app/Core/BaseController.php
 
 namespace App\Core;
 

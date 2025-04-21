@@ -1,5 +1,5 @@
 <?php
-// app/core/helpers.php
+// app/Core/helpers.php
 
 /**
  * helpers.php

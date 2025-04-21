@@ -1,32 +1,24 @@
 <?php
 // config/config.php
 
-/**
- * config.php
- * 
- * Configuration file for the e-commerce application
- */
+// Définit le chemin absolu à la racine du projet
+define('BASE_PATH', dirname(__DIR__)); // /home/amarnac
 
-// Base URL for generating links
-define('BASE_URL', '/my-eshop/www');
+// Base URL pour générer les liens
+define('BASE_URL', '/');
 
-// Absolute path to the app folder
-define('APP_ROOT', dirname(__DIR__) . '/app');
+// Chemin absolu vers le dossier app
+define('APP_ROOT', BASE_PATH . '/app');
 
-// Absolute path to the public folder
-define('PUBLIC_PATH', dirname(__DIR__) . '/www');
+// Chemin vers les fichiers publics
+define('PUBLIC_PATH', BASE_PATH . '/www');
 
-// Absolute path to the uploads folder
+// Chemin vers les uploads
 define('UPLOADS_DIR', 'uploads/products');
 
-// Absolute path for the application
-define('BASE_PATH', dirname(__DIR__));
-
-// Site information
+// Nom du site
 define('SITE_NAME', 'Amarna');
 
-// Password security settings
+// Sécurité des mots de passe
 define('PASSWORD_MIN_LENGTH', 8);
-define('BCRYPT_COST', 12); // Cost factor for password_hash
-
-// Database settings are in database.php
+define('BCRYPT_COST', 12);

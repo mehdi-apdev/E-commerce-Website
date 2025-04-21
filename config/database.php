@@ -2,7 +2,7 @@
 // config/database.php
 
 // Inclure les fonctions utilitaires (dont env())
-require_once __DIR__ . '/../app/core/helpers.php';
+require_once __DIR__ . '/../app/Core/helpers.php';
 
 // Charge les variables d’environnement depuis le fichier .env
 $envPath = dirname(__DIR__) . '/.env';
