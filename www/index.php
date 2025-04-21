@@ -4,11 +4,17 @@
 // 1. Démarrer la session
 session_start();
 
-// 2. Chargement des configs, autoloader, BDD, helpers
+// 1. Configs
 require_once dirname(__DIR__) . '/config/config.php';
+
+// 2. Charge les helpers AVANT database (car contient env())
+require_once dirname(__DIR__) . '/app/core/helpers.php';
+
+// 3. Autoloader
 require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+// 4. Connexion DB
 require_once dirname(__DIR__) . '/config/database.php';
-require_once APP_ROOT . '/core/helpers.php';
 
 // 3. Nettoyage et parsing de l’URL
 $uri = $_SERVER['REQUEST_URI'];

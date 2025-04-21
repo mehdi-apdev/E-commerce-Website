@@ -14,7 +14,7 @@
  * @return string Full URL (ex: '/my-eshop/public/products')
  */
 
- function env(string $key, $default = null) {
+ function env(string $key, mixed $default = null): mixed {
     return $_ENV[$key] ?? $default;
 }
 function url(string $path = ''): string {
