@@ -19,6 +19,8 @@ class ProductsController extends BaseController
 
     public function __construct()
     {
+        file_put_contents(__DIR__ . '/../../www/debug.log', "🔧 ProductsController instancié\n", FILE_APPEND);
+
         parent::__construct();
         $this->productModel = new ProductModel($this->pdo);
     }
@@ -67,65 +69,68 @@ class ProductsController extends BaseController
      * }
      */
     public function getAllJson(): void
-{
-    header('Content-Type: application/json');
+    {
+        header('Content-Type: application/json');
+    
+        file_put_contents('/home/amarnac/www/debug.log', "[getAllJson] Début fonction\n", FILE_APPEND);
 
-    // Logging de début
-    file_put_contents(__DIR__ . '/../../debug.log', "ENTRÉE DANS getAllJson()\n", FILE_APPEND);
-
-    try {
-        // 1) Récup params
-        $category = $_GET['category'] ?? '';
-        $color    = $_GET['color']    ?? '';
-        $fabric   = $_GET['fabric']   ?? '';
-        $size     = $_GET['size']     ?? '';
-        $region   = $_GET['region']   ?? '';
-
-        $orderBy   = $_GET['orderBy']   ?? 'created_at';
-        $direction = $_GET['direction'] ?? 'DESC';
-
-        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-        $limit = 12;
-        $offset = ($page - 1) * $limit;
-
-        $filters = [];
-        if (!empty($category)) $filters['category_id'] = (int)$category;
-        if (!empty($color))    $filters['color_id'] = (int)$color;
-        if (!empty($fabric))   $filters['fabric_id'] = (int)$fabric;
-        if (!empty($region))   $filters['cultural_region_id'] = (int)$region;
-        if (!empty($size))     $filters['size_label'] = $size;
-
-        file_put_contents(__DIR__ . '/../../debug.log', "Filtres : " . json_encode($filters) . "\n", FILE_APPEND);
-
-        // 2) Appels modèle
-        $products = $this->productModel->getDetailedProducts(
-            $filters,
-            $orderBy,
-            $direction,
-            $limit,
-            $offset
-        );
-
-        $totalCount = $this->productModel->countFiltered($filters);
-        $totalPages = ceil($totalCount / $limit);
-
-        // 3) Réponse
-        $response = [
-            'products'    => $products,
-            'totalPages'  => $totalPages,
-            'currentPage' => $page,
-        ];
-
-        echo json_encode($response);
-        file_put_contents(__DIR__ . '/../../debug.log', "Succès : " . count($products) . " produits\n", FILE_APPEND);
-
-    } catch (\Throwable $e) {
-        http_response_code(500);
-        echo json_encode(['error' => $e->getMessage()]);
-        file_put_contents(__DIR__ . '/../../debug.log', "ERREUR DANS getAllJson() : " . $e->getMessage() . "\n", FILE_APPEND);
+        try {
+            // Log d'entrée
+            file_put_contents(__DIR__ . '/../../www/debug.log', "➡️ getAllJson() triggered\n", FILE_APPEND);
+    
+            // 1) Récup params
+            $category = $_GET['category'] ?? '';
+            $color    = $_GET['color']    ?? '';
+            $fabric   = $_GET['fabric']   ?? '';
+            $size     = $_GET['size']     ?? '';
+            $region   = $_GET['region']   ?? '';
+    
+            $orderBy   = $_GET['orderBy']   ?? 'created_at';
+            $direction = $_GET['direction'] ?? 'DESC';
+    
+            $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+            $limit = 12;
+            $offset = ($page - 1) * $limit;
+    
+            // 2) Construire les filtres
+            $filters = [];
+            if (!empty($category)) $filters['category_id'] = (int)$category;
+            if (!empty($color))    $filters['color_id'] = (int)$color;
+            if (!empty($fabric))   $filters['fabric_id'] = (int)$fabric;
+            if (!empty($region))   $filters['cultural_region_id'] = (int)$region;
+            if (!empty($size))     $filters['size_label'] = $size;
+    
+            // 3) Requête
+            $products = $this->productModel->getDetailedProducts(
+                $filters,
+                $orderBy,
+                $direction,
+                $limit,
+                $offset
+            );
+    
+            $totalCount = $this->productModel->countFiltered($filters);
+            $totalPages = ceil($totalCount / $limit);
+    
+            // 4) Réponse JSON
+            echo json_encode([
+                'products'    => $products,
+                'totalPages'  => $totalPages,
+                'currentPage' => $page,
+            ]);
+    
+            // Log de fin
+            file_put_contents(__DIR__ . '/../../www/debug.log', "✅ getAllJson terminé sans erreur\n", FILE_APPEND);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            file_put_contents(__DIR__ . '/../../www/debug.log', "❌ Erreur dans getAllJson: " . $e->getMessage() . "\n", FILE_APPEND);
+            echo json_encode([
+                'error' => 'Server error in getAllJson',
+                'details' => $e->getMessage()
+            ]);
+        }
     }
-}
-
+    
 
     /**
      * API JSON (GET /api/products/{id})

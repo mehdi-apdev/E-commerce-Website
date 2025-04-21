@@ -8,16 +8,19 @@
  */
 
 // Base URL for generating links
-define('BASE_URL', '/my-eshop/public');
+define('BASE_URL', '/my-eshop/www');
 
 // Absolute path to the app folder
 define('APP_ROOT', dirname(__DIR__) . '/app');
 
 // Absolute path to the public folder
-define('PUBLIC_PATH', dirname(__DIR__) . '/public');
+define('PUBLIC_PATH', dirname(__DIR__) . '/www');
 
 // Absolute path to the uploads folder
 define('UPLOADS_DIR', 'uploads/products');
+
+// Absolute path for the application
+define('BASE_PATH', dirname(__DIR__));
 
 // Site information
 define('SITE_NAME', 'Amarna');

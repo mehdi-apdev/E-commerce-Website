@@ -8,7 +8,7 @@
   RewriteCond %{REQUEST_FILENAME} !-d
 
   # Sinon, redirige vers index.php
-  RewriteRule ^ index.php [QSA,L]
+  RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
 
