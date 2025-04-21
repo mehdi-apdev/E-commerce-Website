@@ -31,6 +31,9 @@ file_put_contents(__DIR__ . '/../debug.log', "Route: " . $route . PHP_EOL, FILE_
 // Réponse JSON par défaut
 header('Content-Type: application/json');
 
+// Permet de logger les requêtes
+file_put_contents(__DIR__ . '/../debug.log', "ROUTE: $route\n", FILE_APPEND);
+
 try {
     // ROUTEUR API
     switch (true) {
