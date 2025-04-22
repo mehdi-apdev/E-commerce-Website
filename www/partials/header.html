@@ -1,43 +1,42 @@
-<!-- public/html/partials/header.html -->
-
 <header class="bg-white dark:bg-dark shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-      <!-- Logo -->
-      <a href="/index.html" class="text-2xl sm:text-3xl font-heading text-primary hover:opacity-80 transition">
-        Amarna
-      </a>
-  
-      <!-- Mobile buttons (burger + theme) -->
-      <div class="flex items-center gap-3 md:hidden">
-        <!-- Burger -->
-        <button id="menu-toggle" class="text-gray-600 dark:text-gray-200 focus:outline-none" aria-label="Menu">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-  
-        <!-- Dark Mode Toggle -->
-        <button id="toggle-dark" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition" title="Changer de thème">
-          <svg id="sun-icon" class="h-5 w-5 hidden text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 3v1m0 16v1m8.66-8.66h-1M4.34 12H3m15.36 4.24l-.71-.71M6.34 6.34l-.71-.71m12.02 0l-.71.71M6.34 17.66l-.71.71M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
-          <svg id="moon-icon" class="h-5 w-5 hidden text-gray-800 dark:text-gray-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
-          </svg>
-        </button>
-      </div>
-  
-      <!-- Desktop nav -->
-      <nav id="nav-desktop" class="hidden md:flex items-center gap-6 text-sm sm:text-base font-body">
-        <!-- Contenu injecté par JS -->
-      </nav>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center relative">
+    <!-- Logo -->
+    <a href="/index.html" class="text-2xl sm:text-3xl font-heading text-primary hover:opacity-80 transition">
+      Amarna
+    </a>
+
+    <!-- Desktop nav -->
+    <nav id="nav-desktop" class="hidden md:flex items-center gap-6 text-sm sm:text-base font-body">
+      <!-- Injecté dynamiquement -->
+    </nav>
+
+    <!-- Mobile buttons -->
+    <div class="md:hidden flex items-center gap-3 relative">
+      <!-- Dark mode -->
+      <button id="toggle-dark" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition" title="Changer de thème">
+        <svg id="sun-icon" class="h-5 w-5 hidden text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m8.66-8.66h-1M4.34 12H3m15.36 4.24l-.71-.71M6.34 6.34l-.71-.71m12.02 0l-.71.71M6.34 17.66l-.71.71M12 8a4 4 0 100 8 4 4 0 000-8z" />
+        </svg>
+        <svg id="moon-icon" class="h-5 w-5 hidden text-gray-800 dark:text-gray-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
+        </svg>
+      </button>
+
+      <!-- Burger menu toggle -->
+      <button id="menu-toggle" class="text-gray-600 dark:text-gray-200 focus:outline-none" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+    <!-- Menu déroulant mobile -->
+    <div id="mobile-menu" class="dropdown-menu absolute right-0 top-12 mt-2 hidden md:hidden">
+      <!-- Injecté dynamiquement -->
     </div>
-  
-    <!-- Mobile nav -->
-    <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 space-y-3 font-body text-sm sm:text-base">
-      <!-- Contenu injecté par JS -->
+
     </div>
-  </header>
+  </div>
+</header>

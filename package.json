@@ -1,6 +1,7 @@
 {
   "scripts": {
-  "build:css": "npx tailwindcss -i ./public/assets/css/styles.css -o ./public/assets/css/tailwind.css --watch"
+  "dev": "npx tailwindcss -i ./www/assets/css/styles.css -o ./www/assets/css/tailwind.css --watch",
+  "build": "npx tailwindcss -i ./www/assets/css/styles.css -o ./www/assets/css/tailwind.css --minify"
 },
   "name": "my-eshop",
   "version": "1.0.0",
