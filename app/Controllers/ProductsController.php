@@ -19,8 +19,6 @@ class ProductsController extends BaseController
 
     public function __construct()
     {
-        file_put_contents(__DIR__ . '/../../www/debug.log', "🔧 ProductsController instancié\n", FILE_APPEND);
-
         parent::__construct();
         $this->productModel = new ProductModel($this->pdo);
     }
@@ -71,13 +69,7 @@ class ProductsController extends BaseController
     public function getAllJson(): void
     {
         header('Content-Type: application/json');
-    
-        file_put_contents('/home/amarnac/www/debug.log', "[getAllJson] Début fonction\n", FILE_APPEND);
-
         try {
-            // Log d'entrée
-            file_put_contents(__DIR__ . '/../../www/debug.log', "➡️ getAllJson() triggered\n", FILE_APPEND);
-    
             // 1) Récup params
             $category = $_GET['category'] ?? '';
             $color    = $_GET['color']    ?? '';
@@ -118,12 +110,8 @@ class ProductsController extends BaseController
                 'totalPages'  => $totalPages,
                 'currentPage' => $page,
             ]);
-    
-            // Log de fin
-            file_put_contents(__DIR__ . '/../../www/debug.log', "✅ getAllJson terminé sans erreur\n", FILE_APPEND);
         } catch (\Throwable $e) {
             http_response_code(500);
-            file_put_contents(__DIR__ . '/../../www/debug.log', "❌ Erreur dans getAllJson: " . $e->getMessage() . "\n", FILE_APPEND);
             echo json_encode([
                 'error' => 'Server error in getAllJson',
                 'details' => $e->getMessage()

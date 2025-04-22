@@ -6,8 +6,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-file_put_contents(__DIR__ . '/../www/debug.log', "🛣️ Entrée dans api.php\n", FILE_APPEND);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -27,14 +25,9 @@ $path = parse_url($uri, PHP_URL_PATH);
 
 $basePath = '/api'; // Chemin de base de l'API
 $route = str_replace($basePath, '', $path);
-file_put_contents(__DIR__ . '/../debug.log', "Route: " . $route . PHP_EOL, FILE_APPEND);
-
 
 // Réponse JSON par défaut
 header('Content-Type: application/json');
-
-// Permet de logger les requêtes
-file_put_contents(__DIR__ . '/../debug.log', "ROUTE: $route\n", FILE_APPEND);
 
 try {
     // ROUTEUR API
