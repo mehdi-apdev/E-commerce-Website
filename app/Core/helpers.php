@@ -22,7 +22,7 @@ function url(string $path = ''): string {
     
     // Redirection par défaut vers index.html si aucun chemin
     if ($cleanPath === '') {
-        $cleanPath = 'html/index.html';
+        $cleanPath = 'index.html';
     }
 
     return rtrim(BASE_URL, '/') . '/' . $cleanPath;

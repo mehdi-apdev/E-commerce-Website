@@ -32,7 +32,7 @@ class AuthController extends BaseController
         }
         
         if (isset($_SESSION['user'])) {
-            redirect('html/index.html');
+            redirect('index.html');
         }        
     }
 
@@ -78,7 +78,7 @@ class AuthController extends BaseController
                     }
                     
     
-                    $redirectUrl = url('html/index.html');
+                    $redirectUrl = url('index.html');
     
                     if ($isAjax) {
                         echo json_encode([
@@ -148,7 +148,7 @@ class AuthController extends BaseController
     
                 setFlashMessage('success', 'Votre compte a bien été créé. Bienvenue !');
     
-                $redirectUrl = url('html/index.html');
+                $redirectUrl = url('index.html');
     
                 if ($isAjax) {
                     echo json_encode([
@@ -187,7 +187,7 @@ class AuthController extends BaseController
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
             echo json_encode(['success' => true, 'message' => 'Déconnexion réussie']);
         } else {
-            redirect('html/index.html');
+            redirect('index.html');
         }
     }
 
