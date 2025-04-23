@@ -67,16 +67,10 @@ class AuthController extends BaseController
     
                     // Gestion du cookie de session "remember me"
                     if (!empty($_POST['remember'])) {
-                        // Génère un token aléatoire sécurisé
                         $token = bin2hex(random_bytes(32));
-                    
-                        // Sauvegarde le token dans la BDD
                         $this->userModel->updateRememberToken($user['user_id'], $token);
-                    
-                        // Stocke le token dans un cookie sécurisé, HTTP only
-                        setcookie('remember_token', $token, time() + (30 * 86400), '/', '', false, true);
+                        setSecureCookie('remember_token', $token, time() + (30 * 86400));
                     }
-                    
     
                     $redirectUrl = url('index.html');
     
@@ -103,6 +97,7 @@ class AuthController extends BaseController
             redirect('auth/login');
         }
     }
+    
 
     public function registerPost()
     {
@@ -176,8 +171,8 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        if (isset($_COOKIE['remember_user'])) {
-            setcookie('remember_user', '', time() - 3600, '/', '', false, true);
+        if (isset($_COOKIE['remember_token'])) {
+            setcookie('remember_token', '', time() - 3600, '/', '', false, true);
         }
 
         session_unset();
@@ -193,24 +188,34 @@ class AuthController extends BaseController
 
     public function me()
     {
-        $user = $_SESSION['user'] ?? $this->getUserFromToken();
         header('Content-Type: application/json');
+    
+        $user = $_SESSION['user'] ?? $this->getUserFromToken();
+    
+        // Important : si l'utilisateur est retrouvé via token, on recrée la session
+        if ($user && !isset($_SESSION['user'])) {
+            $_SESSION['user'] = [
+                'id'         => $user['user_id'],
+                'first_name' => $user['first_name'],
+                'last_name'  => $user['last_name'],
+                'email'      => $user['email'],
+                'role'       => $user['role'] ?? 'customer',
+            ];
+        }
     
         if ($user) {
             echo json_encode([
                 'success' => true,
                 'user' => [
                     'first_name' => $user['first_name'],
-                    'last_name' => $user['last_name'],
-                    'email' => $user['email'],
-                    'role' => $user['role'] ?? 'customer'
+                    'last_name'  => $user['last_name'],
+                    'email'      => $user['email'],
+                    'role'       => $user['role'] ?? 'customer'
                 ]
             ]);
         } else {
             http_response_code(401);
-            echo json_encode(['success' => false, 'error' => 'Utilisateur non connecté']);
+            echo json_encode(['success' => false, 'error' => 'Utilisateur non connecté ou non trouvé']);
         }
-    }
-    
-
+    }    
 }

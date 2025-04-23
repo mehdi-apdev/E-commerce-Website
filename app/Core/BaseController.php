@@ -47,10 +47,10 @@ abstract class BaseController
 
     public function getUserFromToken(): ?array
     {
-        if (!empty($_COOKIE['remember_user'])) {
-            $userId = (int) $_COOKIE['remember_user'];
+        if (!empty($_COOKIE['remember_token'])) {
+            $token = $_COOKIE['remember_token'];
             $userModel = new \App\Models\UserModel($this->pdo);
-            return $userModel->getUserById($userId);
+            return $userModel->getUserByRememberToken($token);            
         }
         return null;
     }

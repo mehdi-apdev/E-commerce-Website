@@ -28,6 +28,12 @@ function url(string $path = ''): string {
     return rtrim(BASE_URL, '/') . '/' . $cleanPath;
 }
 
+function setSecureCookie(string $name, string $value, int $expire): void {
+    $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
+    setcookie($name, $value, $expire, '/', '', $secure, true);
+}
+
+
 /**
  * Redirect to a given relative path using BASE_URL
  *

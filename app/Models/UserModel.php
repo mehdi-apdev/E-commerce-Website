@@ -118,7 +118,5 @@ class UserModel extends BaseModel {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE remember_token = :token LIMIT 1");
         $stmt->execute([':token' => $token]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-    }
-    
-
+    }    
 }
