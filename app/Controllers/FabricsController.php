@@ -19,6 +19,6 @@ class FabricsController extends BaseController
     {
         header('Content-Type: application/json');
         $data = $this->fabricModel->getAll();
-        echo json_encode($data);
+        echo json_encode(['fabrics' => $data]);
     }
 }

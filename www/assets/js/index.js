@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // Charger theme-toggle puis header.js
       loadScript('/assets/js/theme-toggle.js', () => {
         loadScript('/assets/js/header.js', () => {
+          // Charger le panier et mettre à jour le badge
+          loadScript('/assets/js/cart.js', () => {
+            updateCartBadge(); // s'assure que le badge est bien affiché après injection du header
+          });
           // Ensuite, si on est sur la page d'accueil, on charge les “nouveaux” / “top ventes”
           loadHomeProducts();
         });

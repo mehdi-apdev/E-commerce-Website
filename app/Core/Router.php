@@ -14,6 +14,10 @@ class Router {
         $this->addRoute('POST', $path, $handler);
     }
 
+    public function put(string $path, callable|array $handler): void {
+        $this->addRoute('PUT', $path, $handler);
+    }
+
     public function delete(string $path, callable|array $handler): void {
         $this->addRoute('DELETE', $path, $handler);
     }
@@ -54,4 +58,5 @@ class Router {
         $regex = preg_replace('#\{([\w]+)\}#', '([^/]+)', $path);
         return '#^' . rtrim($regex, '/') . '$#';
     }
+
 }

@@ -19,6 +19,6 @@ class RegionsController extends BaseController
     {
         header('Content-Type: application/json');
         $data = $this->regionModel->getAll();
-        echo json_encode($data);
+        echo json_encode(['regions' => $data]);
     }
 }

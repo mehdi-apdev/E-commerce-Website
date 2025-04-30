@@ -9,6 +9,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Gestion de _method pour simuler PUT/DELETE via POST + FormData
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method'])) {
+    $_SERVER['REQUEST_METHOD'] = strtoupper($_POST['_method']);
+}
+
+// Chargement des classes nécessaires
 use App\Core\Router;
 use App\Controllers\ProductsController;
 use App\Controllers\CategoriesController;
@@ -16,14 +22,30 @@ use App\Controllers\ColorsController;
 use App\Controllers\FabricsController;
 use App\Controllers\SizesController;
 use App\Controllers\RegionsController;
+use App\Controllers\SuppliersController;
 use App\Controllers\AuthController;
 use App\Controllers\ProfileController;
+use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\ProductsController as AdminProductsController; // <-- aliasé proprement
+
 
 require_once BASE_PATH . '/app/Core/Router.php';
 
 header('Content-Type: application/json');
 
 $router = new Router();
+
+// === ROUTES ADMIN ===
+
+// Dashboard admin (statistiques)
+$router->get('/api/admin/dashboard', [DashboardController::class, 'getStatsJson']);
+
+// CRUD produits admin
+$router->post('/api/admin/products', [AdminProductsController::class, 'storeJson']);
+$router->put('/api/admin/products/{id}', [AdminProductsController::class, 'updateJson']);
+$router->delete('/api/admin/products/{id}', [AdminProductsController::class, 'deleteJson']);
+
+// === ROUTES UTILISATEUR PUBLIC ===
 
 // Produits
 $router->get('/api/products', [ProductsController::class, 'getAllJson']);
@@ -35,6 +57,7 @@ $router->get('/api/colors', [ColorsController::class, 'getAllJson']);
 $router->get('/api/fabrics', [FabricsController::class, 'getAllJson']);
 $router->get('/api/sizes', [SizesController::class, 'getAllJson']);
 $router->get('/api/regions', [RegionsController::class, 'getAllJson']);
+$router->get('/api/suppliers', [SuppliersController::class, 'getAllJson']);
 
 // Auth
 $router->post('/api/auth/registerPost', [AuthController::class, 'registerPost']);

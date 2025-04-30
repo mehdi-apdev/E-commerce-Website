@@ -7,7 +7,6 @@ use PDO;
 
 class ProductImageModel extends BaseModel   
 {
-    private PDO $pdo;
 
     public function __construct(PDO $pdo) {
         parent::__construct($pdo);

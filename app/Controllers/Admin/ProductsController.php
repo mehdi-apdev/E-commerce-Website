@@ -8,9 +8,6 @@ use App\Models\ProductModel;
 use App\Middleware\Admin;
 use App\Models\ProductImageModel;
 
-/**
- * AdminProductController handles the product management in the admin panel.
- */
 class ProductsController extends BaseController
 {
     private ProductModel $productModel;
@@ -19,102 +16,20 @@ class ProductsController extends BaseController
     public function __construct()
     {
         parent::__construct();
-
-        // Checks if the user is admin via middleware
         Admin::handle();
 
         $this->productModel = new ProductModel($this->pdo);
         $this->imageModel = new ProductImageModel($this->pdo);
     }
 
-    /**
-     * Display the list of products in admin panel
-     */
-    public function index()
+    private function validateProductForm(): array
     {
-        // Optional sorting parameters (default: creation date descending)
-        $orderBy = $_GET['orderBy'] ?? 'p.created_at';
-        $direction = $_GET['direction'] ?? 'DESC';
-
-        // Call to the flexible method
-        $products = $this->productModel->getDetailedProducts([
-            'orderBy' => $orderBy,
-            'direction' => $direction
-        ]);
-
-        $this->render('admin/products/index', [
-            'pageTitle' => 'Gestion des produits - Admin',
-            'products' => $products
-        ]);
-    }
-
-    /**
-     * Fetch all data needed to populate select dropdowns in the form
-     *
-     * @return array
-     */
-    private function getFormOptions(): array
-    {
-        return [
-            'categories' => $this->productModel->getCategories(),
-            'colors' => $this->productModel->getColors(),
-            'fabrics' => $this->productModel->getFabrics(),
-            'regions' => $this->productModel->getCulturalRegions(),
-            'suppliers' => $this->productModel->getSuppliers(),
-        ];
-    }
-    
-
-    /**
-     * Show form to create a product
-     */
-    public function create()
-    {
-        $options = $this->getFormOptions();
-    
-        $this->render('admin/products/form', [
-            'pageTitle' => 'Ajouter un produit',
-            'isEdit' => false,
-            ...$options
-        ]);
-    }
-    
-
-
-    /**
-     * Show form to edit a product
-     */
-    public function edit($id)
-    {
-        $product = $this->productModel->getDetailedProductById($id);
-        ;
-        if (!$product) {
-            setFlashMessage('danger', 'Produit introuvable.');
-            redirect('admin/products');
+        // Compatibilité PUT : lecture manuelle si vide (cas PUT natif ou _method=PUT avec FormData)
+        if ($_SERVER['REQUEST_METHOD'] === 'PUT' && empty($_POST)) {
+            parse_str(file_get_contents("php://input"), $_PUT);
+            $_POST = $_PUT;
         }
     
-        $image = $this->imageModel->getMainImageFilename($id);
-        if (!empty($image)) {
-            $product['main_image'] = $image;
-        }        
-    
-        $options = $this->getFormOptions();
-    
-        $this->render('admin/products/form', [
-            'pageTitle' => 'Modifier un produit',
-            'product' => $product,
-            'isEdit' => true,
-            ...$options
-        ]);
-    }
-    
-    
-    /**
-     * Validate the product form data
-     *
-     * @return array An array containing validation errors and sanitized data
-     */
-    private function validateProductForm(): array {
         $name     = sanitize($_POST['name'] ?? '');
         $short    = sanitize($_POST['short_description'] ?? '');
         $desc     = sanitize($_POST['description'] ?? '');
@@ -135,14 +50,8 @@ class ProductsController extends BaseController
             'errors' => $errors,
             'data'   => compact('name', 'short', 'desc', 'price', 'category', 'color', 'fabric', 'region', 'supplier')
         ];
-    }
-    
-    /**
-     * Handles the upload of a product's main image
-     * 
-     * @param int $productId The ID of the product to associate with the image
-     * @return void
-     */
+    }    
+
     private function handleMainImageUpload(int $productId): void
     {
         if (
@@ -151,58 +60,53 @@ class ProductsController extends BaseController
             $_FILES['main_image']['error'] === UPLOAD_ERR_OK
         ) {
             $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            $maxSize = 2 * 1024 * 1024; // 2 MB
-    
+            $maxSize = 2 * 1024 * 1024;
+
             if ($_FILES['main_image']['size'] > $maxSize) {
-                setFlashMessage('danger', 'Image trop grande (max 2 MB)');
-                return;
+                throw new \Exception('Image trop grande (max 2 MB)');
             }
-    
+
             $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
             $mimeType = finfo_file($fileInfo, $_FILES['main_image']['tmp_name']);
             finfo_close($fileInfo);
-    
+
             if (!in_array($mimeType, $allowedMimeTypes)) {
-                setFlashMessage('danger', 'Type de fichier non autorisé (jpg, png, webp)');
-                return;
+                throw new \Exception('Type de fichier non autorisé (jpg, png, webp)');
             }
-    
+
             $uploadDir = PUBLIC_PATH . '/uploads/products/' . $productId;
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-    
+
             $ext = match ($mimeType) {
                 'image/jpeg' => 'jpg',
                 'image/png' => 'png',
                 'image/webp' => 'webp',
                 default => 'jpg'
             };
-    
+
             $filename = 'img_' . time() . '.' . $ext;
             $targetPath = $uploadDir . '/' . $filename;
-    
+
             if (move_uploaded_file($_FILES['main_image']['tmp_name'], $targetPath)) {
-                // Ici on délègue à ProductImageModel :
                 $this->imageModel->setMainImage($productId, $filename);
             } else {
-                setFlashMessage('danger', 'Erreur lors du téléchargement de l’image.');
+                throw new \Exception('Erreur lors du téléchargement de l’image.');
             }
         }
-    }    
+    }
 
-    /**
-     * Store a new product in the database
-     * 
-     * @return void
-     */
-    public function store()
+    public function storeJson()
     {
+        header('Content-Type: application/json');
+
         $validation = $this->validateProductForm();
 
         if (!empty($validation['errors'])) {
-            setFlashMessage('danger', implode('<br>', $validation['errors']));
-            redirect('admin/products/create');
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => implode(', ', $validation['errors'])]);
+            return;
         }
 
         $data = $validation['data'];
@@ -220,34 +124,44 @@ class ProductsController extends BaseController
         ]);
 
         if ($id) {
-            $this->handleMainImageUpload($id);
-            setFlashMessage('success', 'Produit ajouté avec succès');
-            redirect('admin/products');
+            try {
+                $this->handleMainImageUpload($id);
+            } catch (\Throwable $e) {
+                http_response_code(422);
+                echo json_encode(['success' => false, 'message' => 'Image invalide : ' . $e->getMessage()]);
+                return;
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Produit créé avec succès.']);
         } else {
-            setFlashMessage('danger', 'Erreur lors de l\'ajout');
-            redirect('admin/products/create');
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Erreur serveur lors de la création.']);
         }
     }
 
-    /**
-     * Update an existing product in the database
-     *
-     * @param int $id The ID of the product to update
-     * @return void
-     */
-    public function update($id)
+    public function updateJson($id)
     {
+        header('Content-Type: application/json');
+    
+        // Compatibilité avec FormData POST + _method=PUT
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['_method'] ?? '') === 'PUT') {
+            $_SERVER['REQUEST_METHOD'] = 'PUT';
+        }
+    
         $product = $this->productModel->getDetailedProductById($id);
+    
         if (!$product) {
-            setFlashMessage('danger', 'Produit introuvable.');
-            redirect('admin/products');
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Produit non trouvé.']);
+            return;
         }
     
         $validation = $this->validateProductForm();
     
         if (!empty($validation['errors'])) {
-            setFlashMessage('danger', implode('<br>', $validation['errors']));
-            redirect('admin/products/edit/' . $id);
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => implode(', ', $validation['errors'])]);
+            return;
         }
     
         $data = $validation['data'];
@@ -265,48 +179,47 @@ class ProductsController extends BaseController
         ]);
     
         if ($updated) {
-            $this->handleMainImageUpload($id);
-            setFlashMessage('success', 'Produit mis à jour.');
-            redirect('admin/products');
+            try {
+                $this->handleMainImageUpload($id);
+            } catch (\Throwable $e) {
+                http_response_code(422);
+                echo json_encode(['success' => false, 'message' => 'Image invalide : ' . $e->getMessage()]);
+                return;
+            }
+    
+            echo json_encode(['success' => true, 'message' => 'Produit modifié avec succès.']);
         } else {
-            setFlashMessage('warning', 'Aucune modification effectuée.');
-            redirect('admin/products/edit/' . $id);
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Erreur serveur lors de la modification.']);
         }
     }    
 
-    /**
-     * Delete a product from the database
-     *
-     * @param int $id The ID of the product to delete
-     * @return void
-     */
-    public function delete($id)
+    public function deleteJson($id)
     {
+        header('Content-Type: application/json');
+
         $product = $this->productModel->getDetailedProductById($id);
+
         if (!$product) {
-            setFlashMessage('danger', 'Produit introuvable.');
-            redirect('admin/products');
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Produit non trouvé.']);
+            return;
         }
-    
+
         if ($this->productModel->delete($id)) {
-    
             $uploadDir = PUBLIC_PATH . '/uploads/products/' . $id;
             if (is_dir($uploadDir)) {
                 $files = glob($uploadDir . '/*');
                 foreach ($files as $file) {
-                    if (is_file($file)) {
-                        unlink($file);
-                    }
+                    if (is_file($file)) unlink($file);
                 }
                 rmdir($uploadDir);
             }
-    
-            setFlashMessage('success', 'Produit supprimé avec succès.');
+
+            echo json_encode(['success' => true, 'message' => 'Produit supprimé.']);
         } else {
-            setFlashMessage('danger', 'Erreur lors de la suppression.');
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Erreur serveur lors de la suppression.']);
         }
-    
-        redirect('admin/products');
     }
-    
 }

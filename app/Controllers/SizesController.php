@@ -19,6 +19,6 @@ class SizesController extends BaseController
     {
         header('Content-Type: application/json');
         $data = $this->sizeModel->getAll();
-        echo json_encode($data);
+        echo json_encode(['sizes' => $data]);
     }
 }

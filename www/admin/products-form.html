@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produit - Admin | Amarna</title>
+  <link rel="stylesheet" href="/assets/css/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/tailwind.css" />
+</head>
+<body class="bg-light dark:bg-dark text-gray-800 dark:text-gray-100 font-body">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div id="admin-sidebar" class="w-64"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 id="form-title" class="text-2xl font-bold text-primary">Produit</h1>
+        <a href="/admin/products.html" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded transition">Retour</a>
+      </div>
+
+      <!-- Formulaire produit -->
+      <form id="product-form" class="bg-white dark:bg-zinc-800 p-6 rounded shadow-md space-y-6" enctype="multipart/form-data">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Colonne 1 -->
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1 font-medium">Nom du produit *</label>
+              <input type="text" name="name" required class="input" />
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Description courte</label>
+              <textarea name="short_description" class="input" rows="2"></textarea>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Description longue</label>
+              <textarea name="description" class="input" rows="4"></textarea>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Prix *</label>
+              <input type="number" name="price" step="0.01" min="0" required class="input" />
+            </div>
+          </div>
+
+          <!-- Colonne 2 -->
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1 font-medium">Catégorie *</label>
+              <select name="category_id" required class="input"></select>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Couleur</label>
+              <select name="color_id" class="input"></select>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Tissu</label>
+              <select name="fabric_id" class="input"></select>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Région culturelle</label>
+              <select name="cultural_region_id" class="input"></select>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Fournisseur</label>
+              <select name="supplier_id" class="input"></select>
+            </div>
+            <div>
+              <label class="block mb-1 font-medium">Image principale</label>
+              <input type="file" name="main_image" accept="image/*" class="input" />
+              <div id="existing-image-preview" class="mt-2 hidden">
+                <img src="#" alt="Image actuelle" class="w-32 h-32 object-cover rounded border" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-2 rounded transition">
+            Sauvegarder
+          </button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script src="/assets/js/admin/sidebar.js"></script>
+  <script src="/assets/js/admin/products-form.js"></script>
+</body>
+</html>

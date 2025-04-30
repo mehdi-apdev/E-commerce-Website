@@ -217,4 +217,16 @@ class ProductModel extends BaseModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }    
 
+    public function countCategories(): int
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM categories");
+        return (int) $stmt->fetchColumn();
+    }
+    
+    public function countSuppliers(): int
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM suppliers");
+        return (int) $stmt->fetchColumn();
+    }
+    
 }

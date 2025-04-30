@@ -43,7 +43,13 @@ module.exports = {
         },
         '.input': {
           '@apply w-full rounded border px-3 py-2 bg-white dark:bg-zinc-700 dark:text-white': {},
-        }
+        },
+        '.stat-card': {
+          '@apply flex items-center gap-4 bg-white dark:bg-zinc-800 p-6 rounded shadow border border-gray-200 dark:border-zinc-700': {},
+        },
+        '.stat-icon': {
+          '@apply w-12 h-12 flex items-center justify-center rounded-full': {},
+        },
       });
     }
   ]

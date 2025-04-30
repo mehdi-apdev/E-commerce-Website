@@ -1,4 +1,3 @@
-<!-- www/admin/dashboard.html -->
 <!DOCTYPE html>
 <html lang="fr" class="light">
 <head>
@@ -11,44 +10,98 @@
 <body class="bg-light dark:bg-dark text-gray-800 dark:text-gray-100 font-body">
 
   <div class="min-h-screen flex">
-    <!-- Sidebar (chargée dynamiquement) -->
+    <!-- Sidebar -->
     <div id="admin-sidebar" class="w-64"></div>
 
     <!-- Contenu principal -->
     <main class="flex-1 p-6">
       <h1 class="text-2xl font-bold text-primary mb-6">Dashboard administrateur</h1>
 
-      <!-- Cartes de statistiques -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <!-- Produits -->
-        <div class="bg-white dark:bg-zinc-800 p-6 rounded shadow border border-gray-200 dark:border-zinc-700">
-          <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Produits</h2>
-          <p id="total-products" class="text-3xl font-bold text-primary">...</p>
+      <!-- Grille responsive -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <!-- Carte Stat -->
+        <div class="stat-card">
+          <div class="stat-icon bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
+            <!-- Lucide icon: box -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm text-gray-500 dark:text-gray-400">Produits</h2>
+            <p id="total-products" class="text-2xl font-bold text-primary">...</p>
+          </div>
         </div>
 
-        <!-- Catégories -->
-        <div class="bg-white dark:bg-zinc-800 p-6 rounded shadow border border-gray-200 dark:border-zinc-700">
-          <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Catégories</h2>
-          <p id="total-categories" class="text-3xl font-bold text-primary">...</p>
+        <div class="stat-card">
+          <div class="stat-icon bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300">
+            <!-- icon: layers -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M12 2l9 4.5-9 4.5-9-4.5L12 2zm0 18l9-4.5-4.5-2.25M12 20L3 15.5l4.5-2.25" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm text-gray-500 dark:text-gray-400">Catégories</h2>
+            <p id="total-categories" class="text-2xl font-bold text-primary">...</p>
+          </div>
         </div>
 
-        <!-- Fournisseurs -->
-        <div class="bg-white dark:bg-zinc-800 p-6 rounded shadow border border-gray-200 dark:border-zinc-700">
-          <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Fournisseurs</h2>
-          <p id="total-suppliers" class="text-3xl font-bold text-primary">...</p>
+        <div class="stat-card">
+          <div class="stat-icon bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300">
+            <!-- icon: truck -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M3 3h13v13H3V3zm13 0h5l-1 4h-4V3zm-1 16a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm-10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm text-gray-500 dark:text-gray-400">Fournisseurs</h2>
+            <p id="total-suppliers" class="text-2xl font-bold text-primary">...</p>
+          </div>
         </div>
 
-        <!-- Ventes totales -->
-        <div class="bg-white dark:bg-zinc-800 p-6 rounded shadow border border-gray-200 dark:border-zinc-700">
-          <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total des ventes</h2>
-          <p id="total-sales" class="text-3xl font-bold text-primary">...</p>
+        <div class="stat-card">
+          <div class="stat-icon bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300">
+            <!-- icon: credit-card -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M2 5h20v14H2V5zm0 4h20" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm text-gray-500 dark:text-gray-400">Ventes totales</h2>
+            <p id="total-sales" class="text-2xl font-bold text-primary">...</p>
+          </div>
         </div>
+
+        <div class="stat-card">
+          <div class="stat-icon bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300">
+            <!-- icon: receipt -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M3 4v16l3-3 3 3 3-3 3 3 3-3 3 3V4z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm text-gray-500 dark:text-gray-400">Commandes</h2>
+            <p id="total-orders" class="text-2xl font-bold text-primary">...</p>
+          </div>
+        </div>
+
+      </div>
+      <!-- Graphique des ventes mensuelles -->
+      <div class="mt-12 bg-white dark:bg-zinc-800 p-6 rounded shadow border border-gray-200 dark:border-zinc-700">
+        <h2 class="text-xl font-semibold text-primary mb-4">Ventes mensuelles</h2>
+        <canvas id="sales-chart" class="w-full h-96"></canvas>
       </div>
     </main>
   </div>
 
+
+  <!-- ChartJS (ou autre lib si déjà incluse) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- JS -->
   <script src="/assets/js/admin/sidebar.js"></script>
   <script src="/assets/js/admin/dashboard.js"></script>
+
 </body>
 </html>

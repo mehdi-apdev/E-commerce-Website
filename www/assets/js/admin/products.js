@@ -1,4 +1,4 @@
-// www/assets/js/header.js
+// www/assets/js/admin/products.js
 document.addEventListener('DOMContentLoaded', async () => {
     try {
       const response = await fetch('/api/products', {
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td class="px-4 py-3 text-sm">${product.price} €</td>
             <td class="px-4 py-3 text-sm">${product.category_name || '-'}</td>
             <td class="px-4 py-3 text-sm space-x-2">
-              <a href="/admin/products-edit.html?id=${product.product_id}" class="text-blue-500 hover:underline">Modifier</a>
+              <a href="/admin/products-form.html?id=${product.product_id}" class="text-blue-500 hover:underline">Modifier</a>
               <button class="text-red-500 hover:underline" onclick="deleteProduct(${product.product_id})">Supprimer</button>
             </td>
           `;
@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) return;
   
     try {
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await fetch(`/api/admin/products/${productId}`, {
         method: 'DELETE',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      });
+      });      
   
       const result = await response.json();
   

@@ -1,158 +1,79 @@
 // www/assets/js/products.js
 
-/**
- * Gère l'affichage d'un catalogue de produits avec filtres dynamiques,
- * tri (date, prix, nom), pagination, etc.
- *
- * Hypothèse : Le header/footer sont injectés par index.js
- * products.html contient un <aside> pour la sidebar, et ce script.
- */
-
 // Sélection des conteneurs HTML (sidebar + zone produits + pagination)
 const filtersContainer = document.getElementById('filters-container');
 const productsContainer = document.getElementById('products-container');
 const paginationContainer = document.getElementById('pagination-container');
 
-// 1) Crée la structure HTML de base pour les filtres
+document.addEventListener('DOMContentLoaded', () => {
+  renderFilters();
+  loadProducts(1);
+});
+
 function renderFilters() {
-  // On insère des <select> vides pour catégorie, couleur, tissu, taille, région, + tri
+  if (!filtersContainer) return;
+
   filtersContainer.innerHTML = `
     <div>
       <label for="category" class="block font-semibold mb-1 text-sm md:text-base">Catégorie</label>
       <select id="category" class="w-full border rounded px-2 py-1 dark:bg-zinc-800"></select>
     </div>
-
     <div>
       <label for="color" class="block font-semibold mb-1 text-sm md:text-base">Couleur</label>
       <select id="color" class="w-full border rounded px-2 py-1 dark:bg-zinc-800"></select>
     </div>
-
     <div>
       <label for="fabric" class="block font-semibold mb-1 text-sm md:text-base">Tissu</label>
       <select id="fabric" class="w-full border rounded px-2 py-1 dark:bg-zinc-800"></select>
     </div>
-
     <div>
       <label for="size" class="block font-semibold mb-1 text-sm md:text-base">Taille</label>
       <select id="size" class="w-full border rounded px-2 py-1 dark:bg-zinc-800"></select>
     </div>
-
     <div>
       <label for="region" class="block font-semibold mb-1 text-sm md:text-base">Région culturelle</label>
       <select id="region" class="w-full border rounded px-2 py-1 dark:bg-zinc-800" autocomplete="off"></select>
     </div>
   `;
 
-  // Charger les options dynamiquement depuis les endpoints
   loadFilterOptions();
-
-  // Écouteur sur le tri (si l'utilisateur change le tri => loadProducts)
   document.getElementById('sort')?.addEventListener('change', () => loadProducts(1));
 }
 
-// 2) Charge dynamiquement les options depuis l’API
 async function loadFilterOptions() {
-  // Example endpoints :
-  // /api/categories -> [ { category_id, name }... ]
-  // /api/colors -> [ { color_id, name }... ]
-  // /api/fabrics -> [ { fabric_id, name }... ]
-  // /api/sizes -> [ { size_label: 'S' }... ]
-  // /api/regions -> [ { region_id, name }... ]
+  await loadOptions('/api/categories', 'category', 'category_id');
+  await loadOptions('/api/colors', 'color', 'color_id');
+  await loadOptions('/api/fabrics', 'fabric', 'fabric_id');
+  await loadOptions('/api/sizes', 'size', 'size_label');
+  await loadOptions('/api/regions', 'region', 'region_id');
+}
 
-  // Charger catégories
-  const catSelect = document.getElementById('category');
-  if (catSelect) {
-    catSelect.innerHTML = '<option value="">Toutes</option>';
-    try {
-      const categories = await fetch('/api/categories').then(r => r.json());
-      categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat.category_id;
-        opt.textContent = cat.name;
-        catSelect.appendChild(opt);
-      });
-      catSelect.addEventListener('change', () => loadProducts(1));
-    } catch (err) {
-      console.error('Erreur fetch categories:', err);
-    }
-  }
+async function loadOptions(endpoint, elementId, valueKey) {
+  const select = document.getElementById(elementId);
+  if (!select) return;
 
-  // Charger couleurs
-  const colorSelect = document.getElementById('color');
-  if (colorSelect) {
-    colorSelect.innerHTML = '<option value="">Toutes</option>';
-    try {
-      const colors = await fetch('/api/colors').then(r => r.json());
-      colors.forEach(col => {
-        const opt = document.createElement('option');
-        opt.value = col.color_id;
-        opt.textContent = col.name; 
-        colorSelect.appendChild(opt);
-      });
-      colorSelect.addEventListener('change', () => loadProducts(1));
-    } catch (err) {
-      console.error('Erreur fetch colors:', err);
-    }
-  }
+  const defaultLabel = elementId === 'fabric' ? 'Tous' : 'Toutes';
+  select.innerHTML = `<option value="">${defaultLabel}</option>`;
 
-  // Charger tissus
-  const fabricSelect = document.getElementById('fabric');
-  if (fabricSelect) {
-    fabricSelect.innerHTML = '<option value="">Tous</option>';
-    try {
-      const fabrics = await fetch('/api/fabrics').then(r => r.json());
-      fabrics.forEach(fab => {
-        const opt = document.createElement('option');
-        opt.value = fab.fabric_id;
-        opt.textContent = fab.name;
-        fabricSelect.appendChild(opt);
-      });
-      fabricSelect.addEventListener('change', () => loadProducts(1));
-    } catch (err) {
-      console.error('Erreur fetch fabrics:', err);
-    }
-  }
+  try {
+    const res = await fetch(endpoint, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    const json = await res.json();
+    const key = Object.keys(json)[0];
+    const items = json[key];
 
-  // Charger tailles
-  const sizeSelect = document.getElementById('size');
-  if (sizeSelect) {
-    sizeSelect.innerHTML = '<option value="">Toutes</option>';
-    try {
-      const sizes = await fetch('/api/sizes').then(r => r.json());
-      sizes.forEach(sz => {
-        // Suppose: { size_label: 'M' }
-        const opt = document.createElement('option');
-        opt.value = sz.size_label;
-        opt.textContent = sz.size_label;
-        sizeSelect.appendChild(opt);
-      });
-      sizeSelect.addEventListener('change', () => loadProducts(1));
-    } catch (err) {
-      console.error('Erreur fetch sizes:', err);
-    }
-  }
+    items.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item[valueKey];
+      option.textContent = item.name ?? item[valueKey];
+      select.appendChild(option);
+    });
 
-  // Charger régions
-  const regionSelect = document.getElementById('region');
-  if (regionSelect) {
-    regionSelect.innerHTML = '<option value="">Toutes</option>';
-    try {
-      const regions = await fetch('/api/regions').then(r => r.json());
-      regions.forEach(rg => {
-        // Suppose: { region_id, name }
-        const opt = document.createElement('option');
-        opt.value = rg.region_id;
-        opt.textContent = rg.name;
-        regionSelect.appendChild(opt);
-      });
-      regionSelect.addEventListener('change', () => loadProducts(1));
-    } catch (err) {
-      console.error('Erreur fetch regions:', err);
-    }
+    select.addEventListener('change', () => loadProducts(1));
+  } catch (err) {
+    console.error(`Erreur fetch ${elementId}:`, err);
   }
 }
 
-// 3) Récupère les valeurs de tous les filtres (category, color, fabric, size, region) + tri
 function getFilters() {
   const category = document.getElementById('category')?.value || '';
   const color = document.getElementById('color')?.value || '';
@@ -165,7 +86,6 @@ function getFilters() {
   return { category, color, fabric, size, region, orderBy, direction };
 }
 
-// 4) Charge les produits depuis /api/products?category=...&color=... etc.
 function loadProducts(page = 1) {
   const { category, color, fabric, size, region, orderBy, direction } = getFilters();
 
@@ -181,9 +101,7 @@ function loadProducts(page = 1) {
 
   fetch(url)
     .then(res => {
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.json();
     })
     .then(data => {
@@ -200,14 +118,11 @@ function loadProducts(page = 1) {
     });
 }
 
-// 5) Affiche la liste des produits
 function renderProducts(products) {
   productsContainer.innerHTML = '';
 
   if (!products.length) {
-    // Affichage d’un message centré SANS grille
     productsContainer.className = 'flex justify-center items-center min-h-[40vh] px-4';
-
     productsContainer.innerHTML = `
       <p class="text-center text-gray-500 text-lg max-w-md w-full">
         Aucun produit ne correspond à vos critères.
@@ -216,7 +131,6 @@ function renderProducts(products) {
     return;
   }
 
-  // Sinon on remet la grille responsive
   productsContainer.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
 
   products.forEach(product => {
@@ -228,11 +142,7 @@ function renderProducts(products) {
       <div class="bg-white dark:bg-zinc-800 rounded-xl shadow hover:shadow-lg transition overflow-hidden group">
         <div class="relative">
           ${imagePath
-            ? `<img
-                src="${imagePath}"
-                alt="${product.name}"
-                class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-              >`
+            ? `<img src="${imagePath}" alt="${product.name}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">`
             : `<div class="h-48 flex items-center justify-center bg-secondary dark:bg-primary text-white">Aucune image</div>`}
         </div>
         <div class="p-4">
@@ -243,10 +153,7 @@ function renderProducts(products) {
           <p class="text-sm text-primary font-bold mb-3">
             ${product.price} €
           </p>
-          <a
-            href="/product.html?id=${product.product_id}"
-            class="text-sm underline text-primary"
-          >
+          <a href="/product.html?id=${product.product_id}" class="text-sm underline text-primary">
             Voir
           </a>
         </div>
@@ -256,13 +163,8 @@ function renderProducts(products) {
   });
 }
 
-
-
-
-// 6) Affiche la pagination
 function renderPagination(totalPages, currentPage) {
   paginationContainer.innerHTML = '';
-
   if (totalPages <= 1) return;
 
   for (let i = 1; i <= totalPages; i++) {
@@ -272,14 +174,7 @@ function renderPagination(totalPages, currentPage) {
       'mx-1', 'px-3', 'py-1', 'rounded', 'border',
       i === currentPage ? 'bg-primary text-white' : 'hover:bg-gray-200 dark:hover:bg-zinc-700'
     ].join(' ');
-
     btn.addEventListener('click', () => loadProducts(i));
     paginationContainer.appendChild(btn);
   }
 }
-
-// 7) Au chargement, on construit le squelette des filtres, puis on loadProducts
-document.addEventListener('DOMContentLoaded', () => {
-  renderFilters();   // 1) crée structure + loadFilterOptions
-  loadProducts(1);   // 2) affiche la première page
-});

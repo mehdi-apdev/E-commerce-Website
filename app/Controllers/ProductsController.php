@@ -113,8 +113,8 @@ class ProductsController extends BaseController
         } catch (\Throwable $e) {
             http_response_code(500);
             echo json_encode([
-                'error' => 'Server error in getAllJson',
-                'details' => $e->getMessage()
+                'success' => false,
+                'message' => 'Erreur serveur lors du chargement des produits',
             ]);
         }
     }
@@ -130,10 +130,13 @@ class ProductsController extends BaseController
 
         $product = $this->productModel->getDetailedProductById($id);
         if ($product) {
-            echo json_encode($product);
+            echo json_encode(['product' => $product]);
         } else {
             http_response_code(404);
-            echo json_encode(['error' => 'Product not found']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erreur serveur lors du chargement du produit',
+            ]);
         }
     }
 }

@@ -19,6 +19,6 @@ class ColorsController extends BaseController
     {
         header('Content-Type: application/json');
         $data = $this->colorModel->getAll();
-        echo json_encode($data);
+        echo json_encode(['colors' => $data]);
     }
 }

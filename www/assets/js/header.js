@@ -72,7 +72,7 @@ async function renderHeaderLinks() {
       <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .49.598l-1.5 7A.5.5 0 0 1 13 13H4a.5.5 0 0 1-.49-.402L1.61 2H.5a.5.5 0 0 1-.5-.5zM3.14 6l1.25 5.995h8.22L13.89 6H3.14z"/>
       <path d="M5.5 16a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm7 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
     </svg>
-    <span class="absolute -top-2 -right-4 bg-secondary dark:bg-primary text-xs rounded-full px-2 py-1 leading-none">
+    <span id="cart-badge" class="absolute -top-2 -right-4 bg-secondary dark:bg-primary text-xs rounded-full px-2 py-1 leading-none">
       ${cartCount}
     </span>
   </a>

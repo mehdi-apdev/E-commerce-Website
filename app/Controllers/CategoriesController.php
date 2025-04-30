@@ -29,6 +29,6 @@ class CategoriesController extends BaseController
     {
         header('Content-Type: application/json');
         $data = $this->categoryModel->getAll();
-        echo json_encode($data);
+        echo json_encode(['categories' => $data]);
     }
 }
