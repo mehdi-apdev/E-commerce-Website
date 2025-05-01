@@ -54,12 +54,14 @@ function clearCart() {
 function updateCartBadge() {
   const cart = getCart();
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const badge = document.getElementById('cart-badge');
-  if (badge) {
-    // Affiche toujours un chiffre, même 0
+
+  // met à jour tous les éléments #cart-badge présents dans le DOM (desktop + mobile)
+  document.querySelectorAll('#cart-badge').forEach(badge => {
     badge.textContent = totalItems;
-  }
+    badge.classList.toggle('hidden', totalItems === 0);
+  });
 }
+
 
 export {
   getCart,
