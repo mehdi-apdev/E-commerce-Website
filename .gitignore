@@ -63,7 +63,7 @@ www/uploads/
 # ====================
 # Ignorer l'index
 # ====================
-www/uploads/
+www/index.html
 
 # ====================
 # Ignorer les fichiers de configuration de l'environnement
