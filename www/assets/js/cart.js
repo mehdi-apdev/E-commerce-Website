@@ -56,7 +56,8 @@ function updateCartBadge() {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const badge = document.getElementById('cart-badge');
   if (badge) {
-    badge.textContent = totalItems > 0 ? totalItems : '';
+    // Affiche toujours un chiffre, même 0
+    badge.textContent = totalItems;
   }
 }
 
