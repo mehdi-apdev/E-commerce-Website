@@ -15,8 +15,8 @@ composer.lock
 # ====================
 # Ignorer Tailwind/PostCSS compilés
 # ====================
-public/assets/css/*.css
-public/assets/css/*.css.map
+www/assets/css/*.css
+www/assets/css/*.css.map
 
 # ====================
 # Ignorer les fichiers d'environnement
@@ -58,7 +58,12 @@ logs/
 # ====================
 # Ignorer les fichiers d’upload (à uploader en FTP uniquement)
 # ====================
-public/uploads/
+www/uploads/
+
+# ====================
+# Ignorer l'index
+# ====================
+www/uploads/
 
 # ====================
 # Ignorer les fichiers de configuration de l'environnement
