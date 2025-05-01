@@ -1,13 +1,21 @@
 // www/assets/js/products.js
 
+import { initLayout } from './common.js';
+import generateProductCard from './components/productCard.js';
+
+
+
 // Sélection des conteneurs HTML (sidebar + zone produits + pagination)
 const filtersContainer = document.getElementById('filters-container');
 const productsContainer = document.getElementById('products-container');
 const paginationContainer = document.getElementById('pagination-container');
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderFilters();
-  loadProducts(1);
+  // On initialise header/footer/themes/panier AVANT le reste
+  initLayout(() => {
+    renderFilters();
+    loadProducts(1);
+  });
 });
 
 function renderFilters() {
@@ -134,34 +142,11 @@ function renderProducts(products) {
   productsContainer.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
 
   products.forEach(product => {
-    const imagePath = product.main_image
-      ? `/uploads/products/${product.product_id}/${product.main_image.trim()}`
-      : null;
-
-    const card = `
-      <div class="bg-white dark:bg-zinc-800 rounded-xl shadow hover:shadow-lg transition overflow-hidden group">
-        <div class="relative">
-          ${imagePath
-            ? `<img src="${imagePath}" alt="${product.name}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">`
-            : `<div class="h-48 flex items-center justify-center bg-secondary dark:bg-primary text-white">Aucune image</div>`}
-        </div>
-        <div class="p-4">
-          <h3 class="text-lg font-semibold mb-1">${product.name}</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">
-            ${product.short_description || ''}
-          </p>
-          <p class="text-sm text-primary font-bold mb-3">
-            ${product.price} €
-          </p>
-          <a href="/product.html?id=${product.product_id}" class="text-sm underline text-primary">
-            Voir
-          </a>
-        </div>
-      </div>
-    `;
-    productsContainer.innerHTML += card;
+    const card = generateProductCard(product, null, { showAddToCart: true });
+    productsContainer.appendChild(card);
   });
 }
+
 
 function renderPagination(totalPages, currentPage) {
   paginationContainer.innerHTML = '';

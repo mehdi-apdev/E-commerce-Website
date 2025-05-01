@@ -1,8 +1,14 @@
-document.addEventListener('DOMContentLoaded', () => {
-  fetchUserInfo();
+// www/assets/js/profile.js
+import { initLayout } from './common.js';
 
-  document.getElementById('update-profile-btn')?.addEventListener('click', updateProfile);
-  document.getElementById('logout-btn')?.addEventListener('click', logout);
+document.addEventListener('DOMContentLoaded', () => {
+  // Injecte header, footer, thème et panier, puis exécute le reste
+  initLayout(() => {
+    fetchUserInfo();
+
+    document.getElementById('update-profile-btn')?.addEventListener('click', updateProfile);
+    document.getElementById('logout-btn')?.addEventListener('click', logout);
+  });
 });
 
 function fetchUserInfo() {
