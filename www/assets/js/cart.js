@@ -60,5 +60,12 @@ function updateCartBadge() {
   }
 }
 
-// Initialise badge au chargement
-document.addEventListener('DOMContentLoaded', updateCartBadge);
+export {
+  getCart,
+  saveCart,
+  addToCart,
+  updateQuantity,
+  removeFromCart,
+  clearCart,
+  updateCartBadge
+};

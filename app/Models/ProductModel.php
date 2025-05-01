@@ -97,18 +97,18 @@ class ProductModel extends BaseModel {
     
         // Bind des filtres
         foreach ($params as $key => $val) {
-            $paramType = is_int($val) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
+            $paramType = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue(":$key", $val, $paramType);
         }
         // Bind pagination
         if ($limit !== null) {
-            $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
-            $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+            $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         }
     
         // Exécution
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
     /**
@@ -146,7 +146,7 @@ class ProductModel extends BaseModel {
         // Préparation
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $val) {
-            $paramType = is_int($val) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
+            $paramType = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue(":$key", $val, $paramType);
         }
     
