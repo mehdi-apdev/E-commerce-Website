@@ -1,6 +1,6 @@
 // www/assets/js/products.js
 
-import { initLayout } from './common.js';
+import { initLayout, showToast } from './common.js';
 import generateProductCard from './components/productCard.js';
 
 
@@ -79,7 +79,9 @@ async function loadOptions(endpoint, elementId, valueKey) {
     select.addEventListener('change', () => loadProducts(1));
   } catch (err) {
     console.error(`Erreur fetch ${elementId}:`, err);
+    showToast(`Erreur lors du chargement du filtre ${elementId}`, 'error');
   }
+  
 }
 
 function getFilters() {
@@ -118,9 +120,10 @@ function loadProducts(page = 1) {
     })
     .catch(err => {
       console.error('Erreur lors du chargement des produits :', err);
+      showToast("Erreur lors du chargement des produits", 'error');
       productsContainer.innerHTML = `
-        <p class="text-center text-red-500 col-span-full">
-          Impossible de charger les produits pour le moment.
+        <p class="text-center text-gray-500 col-span-full">
+          Aucune donnée à afficher.
         </p>
       `;
     });

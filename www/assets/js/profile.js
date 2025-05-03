@@ -1,5 +1,5 @@
 // www/assets/js/profile.js
-import { initLayout } from './common.js';
+import { initLayout, showToast } from './common.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Injecte header, footer, thème et panier, puis exécute le reste
@@ -22,8 +22,10 @@ function fetchUserInfo() {
         document.getElementById('email').value = email || '';
         document.getElementById('phone').value = phone || '';
       } else {
-        alert('Utilisateur non connecté ou non trouvé');
-        window.location.href = '/login.html';
+        showToast('Utilisateur non connecté ou non trouvé', 'error');
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 1500);        
       }
     })
     .catch(err => {
@@ -51,16 +53,16 @@ function updateProfile() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        alert('Profil mis à jour avec succès');
+        showToast('Profil mis à jour avec succès');
         fetchUserInfo(); // refresh
       } else if (data.errors) {
-        alert(Object.values(data.errors).join('\n'));
+        showToast(Object.values(data.errors).join(' / '), 'error');
       } else {
         alert('Erreur inconnue lors de la mise à jour');
       }
     })
     .catch(err => {
-      console.error('Erreur updateProfile():', err);
+      showToast('Erreur inconnue lors de la mise à jour', 'error');
     });
 }
 

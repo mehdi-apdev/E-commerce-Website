@@ -1,5 +1,6 @@
 // www/assets/js/login.js
-import { initLayout } from './common.js';
+import { initLayout, showToast } from './common.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
   // Injecte le header/footer + thème + panier
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const result = JSON.parse(raw);
         if (result.success) {
+          showToast("Connexion réussie 🎉");
           window.location.href = result.redirect;
         } else {
           Object.entries(result.errors).forEach(([key, message]) => {
@@ -49,17 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           if (result.errors.auth) {
-            const generalError = document.getElementById('auth-error');
-            if (generalError) generalError.textContent = result.errors.auth;
+            showToast(result.errors.auth, 'error');
           }
         }
       } catch (err) {
         console.error("Erreur de parsing JSON :", err);
-        alert("Erreur de réponse serveur.");
+        showToast("Erreur de réponse du serveur", 'error');
       }
     } catch (err) {
-      alert("Erreur réseau. Réessayez.");
-      console.error(err);
+      console.error("Erreur réseau :", err);
+      showToast("Erreur réseau. Veuillez réessayer.", 'error');
     }
   });
 });

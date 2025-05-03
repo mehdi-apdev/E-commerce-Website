@@ -1,5 +1,5 @@
 // www/assets/js/register.js
-import { initLayout } from './common.js';
+import { initLayout, showToast } from './common.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initLayout(() => {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       } catch (error) {
-        alert("Erreur réseau ou serveur. Veuillez réessayer.");
+        showToast("Erreur réseau ou serveur. Veuillez réessayer.", 'error');
       }
     });
   });
