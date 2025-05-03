@@ -27,6 +27,8 @@ use App\Controllers\AuthController;
 use App\Controllers\ProfileController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\ProductsController as AdminProductsController; // <-- aliasé proprement
+use App\Controllers\CheckoutController;
+
 
 
 require_once BASE_PATH . '/app/Core/Router.php';
@@ -50,6 +52,9 @@ $router->delete('/api/admin/products/{id}', [AdminProductsController::class, 'de
 // Produits
 $router->get('/api/products', [ProductsController::class, 'getAllJson']);
 $router->get('/api/products/{id}', [ProductsController::class, 'getOneJson']);
+
+// Commande (checkout)
+$router->post('/api/checkout', [CheckoutController::class, 'create']);
 
 // Filtres
 $router->get('/api/categories', [CategoriesController::class, 'getAllJson']);

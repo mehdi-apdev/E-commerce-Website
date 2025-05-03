@@ -139,4 +139,3 @@ function logout() {
 }
 
 renderHeaderLinks();
-updateCartBadge();

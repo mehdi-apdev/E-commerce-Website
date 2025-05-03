@@ -1,6 +1,15 @@
 <?php
 // www/index.php
 
+// 🔐 Configuration des cookies de session AVANT session_start()
+if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
+    ini_set('session.cookie_secure', '0'); // pas de Secure en local
+    ini_set('session.cookie_samesite', 'Lax'); // autorise fetch sans rejet
+} else {
+    ini_set('session.cookie_secure', '1'); // obligatoire en prod
+    ini_set('session.cookie_samesite', 'None'); // accepte tous les cas cross-origin
+}
+
 session_start();
 
 try {

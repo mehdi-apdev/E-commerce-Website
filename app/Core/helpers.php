@@ -29,9 +29,21 @@ function url(string $path = ''): string {
 }
 
 function setSecureCookie(string $name, string $value, int $expire): void {
-    $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
-    setcookie($name, $value, $expire, '/', '', $secure, true);
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
+        || $_SERVER['SERVER_PORT'] == 443;
+
+    // Pour forcer HTTPS uniquement en production
+    $secure = $isHttps && $_SERVER['HTTP_HOST'] !== 'localhost' && $_SERVER['HTTP_HOST'] !== '127.0.0.1';
+
+    setcookie($name, $value, [
+        'expires' => $expire,
+        'path' => '/',
+        'secure' => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax', // ou 'Strict' selon ton besoin
+    ]);
 }
+
 
 
 /**

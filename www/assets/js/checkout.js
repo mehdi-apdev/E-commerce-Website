@@ -2,11 +2,32 @@
 import { initLayout, showToast } from './common.js';
 import { getCart, clearCart } from './cart.js';
 
+async function prefillUserData() {
+  try {
+    const res = await fetch('/api/auth/getProfile', {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+
+    const data = await res.json();
+    if (data.success && data.user) {
+      const user = data.user;
+
+      document.querySelector('[name="first_name"]').value = user.first_name || '';
+      document.querySelector('[name="last_name"]').value = user.last_name || '';
+      document.querySelector('[name="email"]').value = user.email || '';
+      document.querySelector('[name="phone"]').value = user.phone || '';
+    }
+  } catch (err) {
+    console.warn('Utilisateur non connecté ou erreur /getProfile');
+  }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   initLayout(() => {
     renderCartSummary();
   });
-
+  prefillUserData();
   document.getElementById('checkoutForm')?.addEventListener('submit', handleCheckoutSubmit);
 });
 
@@ -107,15 +128,22 @@ async function handleCheckoutSubmit(e) {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
       },
+      credentials: 'include',
       body: JSON.stringify(payload)
     });
+    
 
     const data = await res.json();
 
     if (data.success) {
-      showToast("🎉 Commande validée avec succès !");
+      sessionStorage.setItem('toast', '🎉 Commande validée avec succès !');
       clearCart();
-      setTimeout(() => window.location.href = '/html/index.html', 1500);
+      sessionStorage.setItem('last_order', JSON.stringify({
+        id: data.order_id,
+        total: data.total_amount.toFixed(2),
+        address: `${userInfo.street} ${userInfo.number}, ${userInfo.postal_code} ${userInfo.city}`
+      }));
+      window.location.href = '/checkout-success.html';      
     } else {
       showToast((data.message || 'Erreur inconnue'), 'error');
     }

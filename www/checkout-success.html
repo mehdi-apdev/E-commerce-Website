@@ -1,0 +1,44 @@
+<!-- www/checkout-success.html -->
+<!DOCTYPE html>
+<html lang="fr" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Commande confirmée | Amarna</title>
+  <link rel="stylesheet" href="/assets/css/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/tailwind.css" />
+</head>
+<body class="bg-light dark:bg-dark text-gray-800 dark:text-gray-100 font-body">
+
+  <!-- Header -->
+  <header></header>
+
+  <main class="max-w-xl mx-auto px-4 py-16 text-center space-y-6">
+    <div class="text-green-600 dark:text-green-400 text-5xl mb-4">✔️</div>
+    <h1 class="text-2xl font-bold text-primary">Merci pour votre commande !</h1>
+
+    <p class="text-gray-600 dark:text-gray-300">
+      Votre commande a bien été enregistrée.<br>
+      Un e-mail de confirmation vous a été envoyé.
+    </p>
+
+    <div id="order-info" class="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-6 text-left shadow mt-6 hidden">
+      <h2 class="text-lg font-semibold mb-3">Résumé :</h2>
+      <ul class="space-y-1 text-sm">
+        <li><strong>Commande n°</strong> : <span id="order-id">-</span></li>
+        <li><strong>Montant total</strong> : <span id="order-total">-</span></li>
+        <li><strong>Adresse de livraison</strong> : <span id="order-address">-</span></li>
+      </ul>
+    </div>
+
+    <a href="/products.html" class="inline-block mt-8 text-sm text-primary underline hover:opacity-90">
+      Continuer mes achats
+    </a>
+  </main>
+
+  <!-- Footer -->
+  <footer></footer>
+
+  <script type="module" src="/assets/js/checkout-success.js"></script>
+</body>
+</html>

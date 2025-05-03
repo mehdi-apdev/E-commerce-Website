@@ -1,4 +1,5 @@
 // www/assets/js/admin/products-form.js
+import { showToast } from '/assets/js/common.js';
 
 const form = document.getElementById('product-form');
 const productId = new URLSearchParams(window.location.search).get('id');
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       form.short_description.value = product.short_description;
       form.description.value = product.description;
       form.price.value = product.price;
+      form.stock.value = product.stock ?? 0;
       form.category_id.value = product.category_id;
       form.color_id.value = product.color_id;
       form.fabric_id.value = product.fabric_id;
@@ -32,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       form.supplier_id.value = product.supplier_id;
     } catch (err) {
       console.error('Erreur chargement produit', err);
-      alert('Erreur lors du chargement du produit.');
+      showToast('Erreur lors du chargement du produit.', 'error');
     }
   }
 });
@@ -42,7 +44,6 @@ form?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const formData = new FormData(form);
-
   const url = isEditMode ? `/api/admin/products/${productId}` : '/api/admin/products';
 
   if (isEditMode) {
@@ -51,7 +52,7 @@ form?.addEventListener('submit', async (e) => {
 
   try {
     const response = await fetch(url, {
-      method: 'POST', // toujours POST même pour update
+      method: 'POST',
       body: formData,
       headers: {
         'X-Requested-With': 'XMLHttpRequest'
@@ -61,14 +62,18 @@ form?.addEventListener('submit', async (e) => {
     const result = await response.json();
 
     if (response.ok && result.success) {
-      alert(result.message || (isEditMode ? 'Produit modifié.' : 'Produit créé.'));
+      // ✅ Stocke le toast avant redirection
+      localStorage.setItem('toastMessage', JSON.stringify({
+        message: result.message || (isEditMode ? 'Produit modifié.' : 'Produit créé.'),
+        type: 'success'
+      }));
       window.location.href = '/admin/products.html';
     } else {
-      alert('Erreur : ' + (result.message || 'Erreur inconnue.'));
+      showToast(result.message || 'Erreur inconnue.', 'error');
     }
   } catch (err) {
     console.error('Erreur lors de la soumission du produit :', err);
-    alert('Erreur serveur ou réseau.');
+    showToast('Erreur serveur ou réseau.', 'error');
   }
 });
 

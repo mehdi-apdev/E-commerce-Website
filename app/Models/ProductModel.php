@@ -192,6 +192,29 @@ class ProductModel extends BaseModel {
         return (int) $this->pdo->query($sql)->fetchColumn();
     }
 
+    public function getValidProduct($productId): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE product_id = ?");
+        $stmt->execute([$productId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+    
+    public function decrementStock($productId, $qty): bool
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE products
+            SET stock = stock - :qty
+            WHERE product_id = :id AND stock >= :qty
+        ");
+        $stmt->execute([
+            'id' => $productId,
+            'qty' => $qty
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+    
+
+
     public function getCategories(): array {
         $stmt = $this->pdo->query("SELECT * FROM categories ORDER BY name ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

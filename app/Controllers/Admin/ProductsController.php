@@ -34,6 +34,7 @@ class ProductsController extends BaseController
         $short    = sanitize($_POST['short_description'] ?? '');
         $desc     = sanitize($_POST['description'] ?? '');
         $price    = floatval($_POST['price'] ?? 0);
+        $stock    = isset($_POST['stock']) ? intval($_POST['stock']) : 0;
         $category = !empty($_POST['category_id']) ? intval($_POST['category_id']) : null;
         $color    = !empty($_POST['color_id']) ? intval($_POST['color_id']) : null;
         $fabric   = !empty($_POST['fabric_id']) ? intval($_POST['fabric_id']) : null;
@@ -44,13 +45,15 @@ class ProductsController extends BaseController
     
         if (!$name) $errors[] = 'Le nom est requis';
         if ($price <= 0) $errors[] = 'Le prix doit être supérieur à 0';
+        if ($stock < 0) $errors[] = 'Le stock ne peut pas être négatif';
         if (!$category) $errors[] = 'La catégorie est requise';
     
         return [
             'errors' => $errors,
-            'data'   => compact('name', 'short', 'desc', 'price', 'category', 'color', 'fabric', 'region', 'supplier')
+            'data'   => compact('name', 'short', 'desc', 'price', 'stock', 'category', 'color', 'fabric', 'region', 'supplier')
         ];
-    }    
+    }
+     
 
     private function handleMainImageUpload(int $productId): void
     {
@@ -116,6 +119,7 @@ class ProductsController extends BaseController
             'short_description' => $data['short'],
             'description' => $data['desc'],
             'price' => $data['price'],
+            'stock' => $data['stock'],
             'category_id' => $data['category'],
             'color_id' => $data['color'],
             'fabric_id' => $data['fabric'],
@@ -171,6 +175,7 @@ class ProductsController extends BaseController
             'short_description' => $data['short'],
             'description' => $data['desc'],
             'price' => $data['price'],
+            'stock' => $data['stock'],
             'category_id' => $data['category'],
             'color_id' => $data['color'],
             'fabric_id' => $data['fabric'],
