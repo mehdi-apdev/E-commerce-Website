@@ -80,3 +80,6 @@ async function deleteProduct(productId) {
     showToast('Erreur réseau ou serveur.', 'error');
   }
 }
+
+// 🔥 Ajouter la fonction au scope global
+window.deleteProduct = deleteProduct;

@@ -24,7 +24,8 @@ async function loadProductDetails() {
             return;
         }
 
-        const { product } = await response.json();
+        // 🔄 On récupère à la fois `product` et `sizes`
+        const { product, sizes } = await response.json();
 
         if (!product) {
             showToast('Produit introuvable.', 'error');
@@ -67,8 +68,9 @@ async function loadProductDetails() {
         const sizeSelector = document.getElementById('size-selector');
         sizeSelector.innerHTML = '<option disabled selected>Choisir une taille</option>';
 
-        if (product.sizes && product.sizes.length > 0) {
-            product.sizes.forEach(size => {
+        // 🔄 On utilise maintenant l'objet `sizes` récupéré directement de l'API
+        if (sizes && sizes.length > 0) {
+            sizes.forEach(size => {
                 const option = document.createElement('option');
                 option.value = size.size_label;
                 option.textContent = `${size.size_label} - ${size.size_description} (Stock: ${size.stock_qty})`;
@@ -80,6 +82,7 @@ async function loadProductDetails() {
         }
 
     } catch (err) {
+        console.error(err);
         showToast('Erreur de connexion avec le serveur.', 'error');
         window.location.href = '/not-available.html';
     }

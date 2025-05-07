@@ -113,8 +113,13 @@ abstract class BaseModel {
     public function delete($id) {
         $sql = "DELETE FROM {$this->table} WHERE {$this->primaryKey} = :id";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute(['id' => $id]);
+        if (!$stmt->execute(['id' => $id])) {
+            $errorInfo = $stmt->errorInfo();
+            error_log("Erreur SQL lors de la suppression : " . $errorInfo[2]);
+        }
+        return $stmt->rowCount() > 0;
     }
+    
     
     /**
      * Find records by a specific field

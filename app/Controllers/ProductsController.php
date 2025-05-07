@@ -127,10 +127,18 @@ class ProductsController extends BaseController
     public function getOneJson(int $id): void
     {
         header('Content-Type: application/json');
-
+    
         $product = $this->productModel->getDetailedProductById($id);
+    
         if ($product) {
-            echo json_encode(['product' => $product]);
+            // ➡️ Séparation explicite des tailles du produit pour le front-end
+            $sizes = $product['sizes'] ?? [];
+            unset($product['sizes']);
+    
+            echo json_encode([
+                'product' => $product,
+                'sizes' => $sizes // ➡️ Ajout explicite des tailles dans la réponse JSON
+            ]);
         } else {
             http_response_code(404);
             echo json_encode([
@@ -139,4 +147,5 @@ class ProductsController extends BaseController
             ]);
         }
     }
+    
 }

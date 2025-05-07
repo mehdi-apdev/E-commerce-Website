@@ -1,9 +1,47 @@
-// www/assets/js/admin/products-form.js
 import { showToast } from '/assets/js/common.js';
 
 const form = document.getElementById('product-form');
 const productId = new URLSearchParams(window.location.search).get('id');
 const isEditMode = Boolean(productId);
+
+// Sélecteurs pour les tailles
+const sizeInput = document.getElementById('size-input');
+const stockInput = document.getElementById('stock-input');
+const sizeList = document.getElementById('size-list');
+const addSizeButton = document.getElementById('add-size-btn');
+
+/**
+ * Gestion des tailles
+ */
+addSizeButton.addEventListener('click', () => {
+  if (!sizeInput.value || !stockInput.value) {
+    showToast("Veuillez remplir les deux champs pour ajouter une taille.", "error");
+    return;
+  }
+
+  addSizeToList(sizeInput.value, stockInput.value);
+
+  // Réinitialiser les champs
+  sizeInput.value = "";
+  stockInput.value = "";
+});
+
+/** Ajoute une taille à la liste (interface + données cachées pour le form) */
+function addSizeToList(size, stock) {
+  const li = document.createElement('li');
+  li.className = 'flex items-center gap-4';
+
+  li.innerHTML = `
+    <span class="text-sm">${size} - ${stock} en stock</span>
+    <input type="hidden" name="sizes[]" value="${size}">
+    <input type="hidden" name="stocks[]" value="${stock}">
+    <button type="button" class="text-red-500 hover:text-red-700">Supprimer</button>
+  `;
+
+  // Bouton de suppression
+  li.querySelector('button').addEventListener('click', () => li.remove());
+  sizeList.appendChild(li);
+}
 
 /** Initialise le formulaire (chargement des options + préremplissage éventuel) */
 document.addEventListener('DOMContentLoaded', async () => {
@@ -20,18 +58,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isEditMode) {
     try {
       const response = await fetch(`/api/products/${productId}`);
-      const { product } = await response.json();
+      const { product, sizes } = await response.json();
 
+      // Remplissage des champs de base
       form.name.value = product.name;
       form.short_description.value = product.short_description;
       form.description.value = product.description;
       form.price.value = product.price;
-      form.stock.value = product.stock ?? 0;
       form.category_id.value = product.category_id;
       form.color_id.value = product.color_id;
       form.fabric_id.value = product.fabric_id;
       form.cultural_region_id.value = product.cultural_region_id;
       form.supplier_id.value = product.supplier_id;
+
+      // Remplissage des tailles
+      sizes.forEach(sizeData => {
+        addSizeToList(sizeData.size_label, sizeData.stock_qty);
+      });
+
     } catch (err) {
       console.error('Erreur chargement produit', err);
       showToast('Erreur lors du chargement du produit.', 'error');
@@ -50,6 +94,34 @@ form?.addEventListener('submit', async (e) => {
     formData.append('_method', 'PUT');
   }
 
+  // 🟢 Récupération des tailles et des stocks
+  const sizeInputs = document.querySelectorAll('input[name="sizes[]"]');
+  const stockInputs = document.querySelectorAll('input[name="stocks[]"]');
+  
+  const sizesArray = [];
+  
+  sizeInputs.forEach((sizeInput, index) => {
+    const sizeLabel = sizeInput.value;
+    const stockQty = stockInputs[index].value;
+
+    if (sizeLabel && stockQty) {
+      sizesArray.push({
+        size_label: sizeLabel,
+        stock_qty: parseInt(stockQty, 10),
+      });
+    }
+  });
+
+  // 🟢 On ajoute ce tableau JSON directement au FormData
+  formData.append('sizes', JSON.stringify(sizesArray));
+
+  // 🔍 Vérification console
+  console.log("=== Données envoyées au serveur ===");
+  formData.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
+  });
+  console.log("=== Fin des données ===");
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -62,7 +134,6 @@ form?.addEventListener('submit', async (e) => {
     const result = await response.json();
 
     if (response.ok && result.success) {
-      // ✅ Stocke le toast avant redirection
       localStorage.setItem('toastMessage', JSON.stringify({
         message: result.message || (isEditMode ? 'Produit modifié.' : 'Produit créé.'),
         type: 'success'
@@ -76,6 +147,7 @@ form?.addEventListener('submit', async (e) => {
     showToast('Erreur serveur ou réseau.', 'error');
   }
 });
+
 
 /** Fonction utilitaire pour remplir un select depuis une API */
 async function populateSelect(url, selectName) {

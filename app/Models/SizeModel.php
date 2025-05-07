@@ -8,6 +8,7 @@ use PDO;
 class SizeModel extends BaseModel
 {
     protected string $table = 'sizes';
+    protected string $primaryKey = 'size_id';
 
     public function __construct(PDO $pdo)
     {
@@ -32,4 +33,28 @@ class SizeModel extends BaseModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
+    public function deleteByProductId(int $productId): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM sizes WHERE product_id = ?");
+        return $stmt->execute([$productId]);
+    }
+
+    public function createSize(int $productId, string $size, int $stockQty): bool
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO sizes (product_id, size_label, stock_qty) VALUES (?, ?, ?)");
+        return $stmt->execute([$productId, $size, $stockQty]);
+    }
+
+    public function updateSizes(int $productId, array $sizes): bool
+    {
+        $this->deleteByProductId($productId);
+    
+        foreach ($sizes as $size) {
+            $this->createSize($productId, $size['size_label'], $size['stock_qty']);
+        }
+    
+        return true;
+    }
+    
+
 }

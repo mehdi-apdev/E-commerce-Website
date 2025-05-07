@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\BaseModel;
+use PDOException;
 use PDO;
 
 /**
@@ -228,8 +229,8 @@ class ProductModel extends BaseModel {
         ]);
         return $stmt->rowCount() > 0;
     }
-    
 
+    
 
     public function getCategories(): array {
         $stmt = $this->pdo->query("SELECT * FROM categories ORDER BY name ASC");
@@ -267,5 +268,51 @@ class ProductModel extends BaseModel {
         $stmt = $this->pdo->query("SELECT COUNT(*) FROM suppliers");
         return (int) $stmt->fetchColumn();
     }
-    
+/**
+ * Supprime le produit ainsi que toutes ses dépendances
+ */
+public function deleteWithDependencies(int $productId): bool
+{
+    // ⚠️ Utiliser le bon PDO, c'est $this->pdo et non $this->db
+    try {
+        // ➡️ Début de la transaction SQL
+        $this->pdo->beginTransaction();
+
+        // ➡️ Suppression des tables dépendantes (ordre important)
+        $this->deleteFromTable('order_items', $productId);       // Lié aux commandes
+        $this->deleteFromTable('product_images', $productId);     // Images du produit
+        $this->deleteFromTable('shopping_cart', $productId);      // Panier
+        $this->deleteFromTable('wishlists', $productId);          // Liste de souhaits
+        $this->deleteFromTable('inventory_logs', $productId);     // Logs d'inventaire
+        $this->deleteFromTable('sizes', $productId);              // Tailles
+        $this->deleteFromTable('accessories', $productId);        // Accessoires
+        $this->deleteFromTable('bottoms', $productId);            // Bas
+        $this->deleteFromTable('tops', $productId);               // Hauts
+
+        // ➡️ Suppression du produit principal
+        $stmt = $this->pdo->prepare("DELETE FROM products WHERE product_id = ?");
+        $stmt->execute([$productId]);
+
+        // ➡️ Validation de la transaction
+        $this->pdo->commit();
+
+        return true;
+    } catch (PDOException $e) {
+        // ➡️ Annulation de la transaction en cas d'erreur
+        $this->pdo->rollBack();
+        error_log("Erreur lors de la suppression du produit ID $productId : " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Supprime toutes les entrées liées au produit dans une table donnée
+ */
+private function deleteFromTable(string $table, int $productId): void
+{
+    $stmt = $this->pdo->prepare("DELETE FROM $table WHERE product_id = ?");
+    $stmt->execute([$productId]);
+}
+
+
 }
