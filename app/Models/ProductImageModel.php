@@ -36,7 +36,7 @@ class ProductImageModel extends BaseModel
     }
 
 
-    // Tu pourras aussi ajouter :
+    // ajouter :
     // - getAllImagesForProduct()
     // - deleteImage()
     // - reorderImages()

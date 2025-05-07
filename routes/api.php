@@ -52,6 +52,8 @@ $router->delete('/api/admin/products/{id}', [AdminProductsController::class, 'de
 // Produits
 $router->get('/api/products', [ProductsController::class, 'getAllJson']);
 $router->get('/api/products/{id}', [ProductsController::class, 'getOneJson']);
+$router->get('/api/products/{id}/sizes', [SizesController::class, 'getByProductIdJson']);
+
 
 // Commande (checkout)
 $router->post('/api/checkout', [CheckoutController::class, 'create']);

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produit | Amarna</title>
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/tailwind.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+    <style>
+        /* Carousel */
+        .product-image {
+            max-height: 500px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .glide__slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        /* Boutons de navigation */
+        .glide__arrow {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            z-index: 10;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .glide__arrow--left {
+            left: 10px;
+        }
+        .glide__arrow--right {
+            right: 10px;
+        }
+        .glide__arrow:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        /* Informations Produit */
+        #product-details {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        #product-name {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: #b07d62;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        #product-price {
+            font-size: 1.8rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .btn-primary, .btn-secondary {
+            padding: 14px 24px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #b07d62;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #a26f58;
+        }
+        .btn-secondary {
+            background-color: #4a4a4a;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body class="bg-light dark:bg-dark text-gray-800 dark:text-gray-100 font-body">
+
+    <!-- Header -->
+    <header></header>
+
+    <!-- Contenu principal -->
+    <main class="container mx-auto px-4 py-10 grid grid-cols-1 gap-8">
+        
+        <!-- Image et Galerie (Carousel) -->
+        <div id="product-images" class="relative">
+            <div class="glide">
+                <div class="glide__track" data-glide-el="track">
+                    <ul id="carousel-slides" class="glide__slides">
+                        <!-- Images dynamiques ici -->
+                    </ul>
+                </div>
+
+                <!-- Boutons de navigation -->
+                <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
+                    <span class="text-xl">‹</span>
+                </button>
+                <button class="glide__arrow glide__arrow--right" data-glide-dir=">">
+                    <span class="text-xl">›</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Informations produit -->
+        <div id="product-details">
+            <h1 id="product-name"></h1>
+            <p id="product-price"></p>
+            <p id="product-description" class="text-gray-700 dark:text-gray-300 mb-6 text-center"></p>
+
+            <!-- Sélecteur de taille -->
+            <div class="space-y-2 mb-6">
+                <label for="size-selector" class="text-gray-700 dark:text-gray-300">Sélectionner la taille :</label>
+                <select id="size-selector" class="w-full p-3 border rounded-md dark:bg-zinc-800">
+                    <option disabled selected>Choisir une taille</option>
+                </select>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button id="add-to-cart" class="btn-primary flex items-center justify-center">
+                    🛒 Ajouter au panier
+                </button>
+                <button id="buy-now" class="btn-secondary flex items-center justify-center">
+                    💳 Acheter maintenant
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Footer -->
+    <footer></footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide"></script>
+    <script type="module" src="/assets/js/product.js"></script>
+
+</body>
+</html>

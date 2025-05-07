@@ -1,4 +1,5 @@
 import { addToCart } from '../cart.js';
+import { showToast } from '../common.js';
 
 /**
  * Génère dynamiquement une carte produit (HTML) à insérer dans la page.
@@ -20,9 +21,9 @@ export default function generateProductCard(product, badgeText = null, options =
     ? `<span class="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded shadow-md z-10">${badgeText}</span>`
     : '';
 
-  // Création de la carte entière cliquable (vers product.html?id=...)
+  // Création de la carte entière cliquable
   const card = document.createElement('a');
-  card.href = `/product.html?id=${product.product_id}`;
+  card.href = `/product/${product.product_id}`;
   card.className = `
     relative group rounded-2xl shadow-sm hover:shadow-xl transition overflow-hidden
     bg-white dark:bg-zinc-800 flex flex-col justify-between hover:ring-2 hover:ring-primary/30`;
@@ -52,10 +53,69 @@ export default function generateProductCard(product, badgeText = null, options =
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
     `;
-    btn.addEventListener('click', event => {
-      event.preventDefault(); // évite le clic sur le <a>
-      addToCart(product.product_id);
-    });
+
+    // ➡️ Gestion du clic sur le bouton +
+    btn.addEventListener('click', async event => {
+      event.stopPropagation(); // ⛔ Empêche le clic de se propager
+      event.preventDefault(); // ⛔ Empêche la redirection
+    
+      console.log(`🛒 Ouverture du menu pour le produit : ${product.product_id}`);
+    
+      try {
+        // Récupération des tailles depuis l'API
+        const response = await fetch(`/api/products/${product.product_id}/sizes`);
+        const { sizes } = await response.json();
+        console.log('Tailles récupérées :', sizes);
+    
+        if (!sizes || sizes.length === 0) {
+          showToast("Aucune taille disponible pour ce produit.", "error");
+          return;
+        }
+    
+        // Création du menu déroulant
+        const dropdown = document.createElement('div');
+        dropdown.className = `
+          absolute bg-white dark:bg-zinc-800 p-2 rounded-md shadow-lg z-50 size-dropdown
+        `;
+        dropdown.style.zIndex = '1000';
+        dropdown.style.right = '0';
+        dropdown.style.top = '40px'; // 🔥 Décalage pour ne pas chevaucher le bouton
+        dropdown.style.position = 'absolute';
+        dropdown.style.display = 'block';
+    
+        // Ajout des options
+        sizes.forEach(size => {
+          const option = document.createElement('div');
+          option.textContent = `${size.size_label} - (${size.stock_qty} en stock)`;
+          option.className = 'p-2 hover:bg-primary hover:text-white cursor-pointer';
+          option.addEventListener('click', event => {
+            event.stopPropagation(); // ⛔ Empêche la propagation
+            event.preventDefault(); // ⛔ Empêche la redirection
+            console.log(`✅ Taille sélectionnée : ${size.size_label}`);
+            addToCart(product.product_id, size.size_label);
+            showToast(`Produit ajouté au panier : ${product.name} - ${size.size_label}`, 'success');
+            dropdown.remove();
+          });
+          dropdown.appendChild(option);
+        });
+    
+        // Suppression de l'ancien dropdown s'il existe
+        const existingDropdown = imageContainer.querySelector('.size-dropdown');
+        if (existingDropdown) existingDropdown.remove();
+    
+        // 🔥 Positionnement relatif pour le menu
+        imageContainer.style.position = 'relative';
+        imageContainer.style.overflow = 'visible';
+        imageContainer.appendChild(dropdown);
+    
+        console.log("✅ Menu déroulant ajouté au DOM");
+    
+      } catch (error) {
+        console.error("Erreur lors de la récupération des tailles :", error);
+        showToast("Erreur lors de la récupération des tailles.", "error");
+      }
+    });    
+    
     imageContainer.appendChild(btn);
   }
 
@@ -70,5 +130,6 @@ export default function generateProductCard(product, badgeText = null, options =
 
   card.appendChild(imageContainer);
   card.appendChild(content);
+
   return card;
 }

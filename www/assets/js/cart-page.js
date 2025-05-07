@@ -35,17 +35,28 @@ async function renderCart() {
       const subtotal = product.price * item.quantity;
       total += subtotal;
 
+      // ✅ Affichage de la taille dans le rendu
       return `
         <div class="flex items-center gap-4 border-b py-4">
           <img src="${imagePath}" alt="${product.name}" class="w-20 h-20 object-cover rounded" />
           <div class="flex-1">
-            <a href="/product.html?id=${product.product_id}" class="font-medium hover:underline">${product.name}</a>
-            <p class="text-sm text-gray-500">${product.price} € x ${item.quantity}</p>
+            <a href="/product/${product.product_id}" class="font-medium hover:underline">${product.name}</a>
+            <p class="text-sm text-gray-500">${product.price} € x ${item.quantity} (${item.size})</p>
             <p class="text-sm font-bold text-primary">${subtotal.toFixed(2)} €</p>
           </div>
           <div>
-            <input type="number" min="1" value="${item.quantity}" class="w-16 p-1 text-center rounded border dark:bg-zinc-800" onchange="updateCartQuantity(${product.product_id}, this.value)" />
-            <button onclick="removeFromCart(${product.product_id})" class="text-sm text-red-500 hover:underline ml-2">Retirer</button>
+            <input 
+              type="number" 
+              min="1" 
+              value="${item.quantity}" 
+              class="w-16 p-1 text-center rounded border dark:bg-zinc-800" 
+              onchange="updateCartQuantity(${product.product_id}, '${item.size}', this.value)" 
+            />
+            <button 
+              onclick="removeFromCart(${product.product_id}, '${item.size}')" 
+              class="text-sm text-red-500 hover:underline ml-2">
+              Retirer
+            </button>
           </div>
         </div>
       `;
@@ -67,13 +78,13 @@ async function renderCart() {
   }
 }
 
-// Fonctions globales accessibles inline (car appelées dans le HTML dynamiquement)
-window.updateCartQuantity = function (productId, newQty) {
-  updateQuantity(productId, parseInt(newQty));
+// ✅ Fonctions globales accessibles inline (car appelées dans le HTML dynamiquement)
+window.updateCartQuantity = function (productId, size, newQty) {
+  updateQuantity(productId, size, parseInt(newQty));
   renderCart();
 }
 
-window.removeFromCart = function (productId) {
-  removeItem(productId);
+window.removeFromCart = function (productId, size) {
+  removeItem(productId, size);
   renderCart();
 }

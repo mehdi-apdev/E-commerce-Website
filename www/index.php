@@ -37,9 +37,15 @@ try {
         exit;
     }
 
-    // Sinon 404
-    http_response_code(404);
-    echo json_encode(['error' => 'Not Found']);
+    // 🌟 Gestion de la page produit générique
+    if (preg_match('#^/product/(\d+)$#', $cleanUri, $matches)) {
+        readfile(__DIR__ . '/product.html');
+        exit;
+    }
+
+    // 🌟 Redirection vers la page 404
+    http_response_code(302);
+    header('Location: /404.html');
     exit;
 
 } catch (Throwable $e) {

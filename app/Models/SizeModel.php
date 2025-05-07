@@ -13,13 +13,23 @@ class SizeModel extends BaseModel
     {
         parent::__construct($pdo);
     }
-
     public function getAll(): array
     {
-        // Suppose la table `sizes` a un champ `size_label`.
-        // On ne stocke peut-être pas d’ID, c’est possible.
-        // On ordonne par label par ex:
-        $sql = "SELECT DISTINCT size_label FROM {$this->table} ORDER BY size_label";
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM sizes";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getByProductId(int $productId): array
+    {
+        $sql = "SELECT size_label, stock_qty 
+                FROM sizes 
+                WHERE product_id = :product_id";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['product_id' => $productId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }

@@ -178,14 +178,30 @@ class ProductModel extends BaseModel {
                 LEFT JOIN suppliers s ON p.supplier_id = s.supplier_id
                 WHERE p.product_id = :id
                 LIMIT 1";
-
+    
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
+        // ✅ Récupération de toutes les images associées
+        if ($product) {
+            $imageSql = "SELECT filename, is_main FROM product_images WHERE product_id = :id";
+            $imageStmt = $this->pdo->prepare($imageSql);
+            $imageStmt->execute(['id' => $id]);
+            $product['images'] = $imageStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // ✅ Récupération des tailles disponibles
+            $sizeSql = "SELECT size_label, size_description, stock_qty 
+                        FROM sizes 
+                        WHERE product_id = :id AND stock_qty > 0";
+            $sizeStmt = $this->pdo->prepare($sizeSql);
+            $sizeStmt->execute(['id' => $id]);
+            $product['sizes'] = $sizeStmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    
         return $product ?: null;
-    }   
-
+    }
+    
     public function countAll(): int
     {
         $sql = "SELECT COUNT(*) FROM {$this->table}";
