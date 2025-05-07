@@ -69,3 +69,9 @@ www/index.html
 # Ignorer les fichiers de configuration de l'environnement
 # ====================
 .env"www/debug.log" 
+
+# ====================
+# Ignorer les fichiers txt et zip
+# ====================
+.txt
+.zip
