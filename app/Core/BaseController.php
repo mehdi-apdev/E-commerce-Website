@@ -50,9 +50,25 @@ abstract class BaseController
         if (!empty($_COOKIE['remember_token'])) {
             $token = $_COOKIE['remember_token'];
             $userModel = new \App\Models\UserModel($this->pdo);
-            return $userModel->getUserByRememberToken($token);            
+            $user = $userModel->getUserByRememberToken($token);  
+    
+            if ($user) {
+                // 🔥 On restaure la session PHP
+                $_SESSION['user'] = [
+                    'id' => $user['user_id'],
+                    'first_name' => $user['first_name'],
+                    'last_name' => $user['last_name'],
+                    'email' => $user['email']
+                ];
+    
+                // 🔎 Log temporaire pour vérifier que ça fonctionne
+                file_put_contents('debug.log', print_r($_SESSION, true));
+                
+                return $_SESSION['user'];
+            }
         }
         return null;
     }
+    
 
 }

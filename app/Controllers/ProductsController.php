@@ -104,7 +104,13 @@ class ProductsController extends BaseController
             $totalCount = $this->productModel->countFiltered($filters);
             $totalPages = ceil($totalCount / $limit);
     
-            // 4) Réponse JSON
+            // 4) Ajout des tailles pour chaque produit
+            $sizeModel = new \App\Models\SizeModel($this->pdo);
+            foreach ($products as &$product) {
+                $product['sizes'] = $sizeModel->getByProductId($product['product_id']);
+            }
+    
+            // 5) Réponse JSON
             echo json_encode([
                 'products'    => $products,
                 'totalPages'  => $totalPages,
@@ -118,6 +124,7 @@ class ProductsController extends BaseController
             ]);
         }
     }
+    
     
 
     /**

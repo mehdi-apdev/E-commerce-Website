@@ -25,23 +25,29 @@ async function renderCart() {
     let total = 0;
 
     const itemsHtml = cart.map(item => {
-      const product = products.find(p => p.product_id === item.product_id);
+      const product = products.find(p => parseInt(p.product_id) === parseInt(item.product_id));
       if (!product) return '';
-
+    
+      // 🔎 On récupère les informations de taille depuis le produit
+      const sizeData = product.sizes ? product.sizes.find(s => parseInt(s.size_id) === parseInt(item.size_id)) : null;
+    
+      // ✅ On récupère le prix directement depuis le produit (pas la taille)
+      const price = parseFloat(product.price);
+    
       const imagePath = product.main_image
         ? `/uploads/products/${product.product_id}/${product.main_image.trim()}`
-        : null;
-
-      const subtotal = product.price * item.quantity;
+        : '/uploads/products/default-image.png';
+    
+      const subtotal = price * item.quantity;
       total += subtotal;
-
-      // ✅ Affichage de la taille dans le rendu
+    
+      // ✅ Génération de l'affichage produit avec le bon label de taille
       return `
         <div class="flex items-center gap-4 border-b py-4">
           <img src="${imagePath}" alt="${product.name}" class="w-20 h-20 object-cover rounded" />
           <div class="flex-1">
             <a href="/product/${product.product_id}" class="font-medium hover:underline">${product.name}</a>
-            <p class="text-sm text-gray-500">${product.price} € x ${item.quantity} (${item.size})</p>
+            <p class="text-sm text-gray-500">${price.toFixed(2)} € x ${item.quantity} (${sizeData ? sizeData.size_label : item.size})</p>
             <p class="text-sm font-bold text-primary">${subtotal.toFixed(2)} €</p>
           </div>
           <div>
@@ -50,10 +56,10 @@ async function renderCart() {
               min="1" 
               value="${item.quantity}" 
               class="w-16 p-1 text-center rounded border dark:bg-zinc-800" 
-              onchange="updateCartQuantity(${product.product_id}, '${item.size}', this.value)" 
+              onchange="updateCartQuantity(${product.product_id}, ${item.size_id}, this.value)" 
             />
             <button 
-              onclick="removeFromCart(${product.product_id}, '${item.size}')" 
+              onclick="removeFromCart(${product.product_id}, ${item.size_id})" 
               class="text-sm text-red-500 hover:underline ml-2">
               Retirer
             </button>
@@ -61,7 +67,10 @@ async function renderCart() {
         </div>
       `;
     }).join('');
-
+    
+    
+    
+    // ✅ Insertion dans le DOM
     container.innerHTML = `
       <div class="space-y-4">
         ${itemsHtml}
@@ -71,6 +80,7 @@ async function renderCart() {
         <a href="/checkout.html" class="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition">Passer commande</a>
       </div>
     `;
+
     updateCartBadge();
   } catch (err) {
     console.error('Erreur chargement panier :', err);
@@ -79,12 +89,13 @@ async function renderCart() {
 }
 
 // ✅ Fonctions globales accessibles inline (car appelées dans le HTML dynamiquement)
-window.updateCartQuantity = function (productId, size, newQty) {
-  updateQuantity(productId, size, parseInt(newQty));
+window.updateCartQuantity = function (productId, sizeId, newQty) {
+  updateQuantity(productId, sizeId, parseInt(newQty));
   renderCart();
-}
+};
 
-window.removeFromCart = function (productId, size) {
-  removeItem(productId, size);
+window.removeFromCart = function (productId, sizeId) {
+  removeItem(productId, sizeId);
   renderCart();
-}
+};
+

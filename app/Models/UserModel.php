@@ -117,6 +117,9 @@ class UserModel extends BaseModel {
     public function getUserByRememberToken(string $token): ?array {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE remember_token = :token LIMIT 1");
         $stmt->execute([':token' => $token]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-    }    
+        $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+        return $user;
+    }
+       
 }

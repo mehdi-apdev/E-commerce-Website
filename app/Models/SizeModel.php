@@ -23,7 +23,7 @@ class SizeModel extends BaseModel
 
     public function getByProductId(int $productId): array
     {
-        $sql = "SELECT size_label, stock_qty 
+        $sql = "SELECT size_id, size_label, stock_qty 
                 FROM sizes 
                 WHERE product_id = :product_id";
         

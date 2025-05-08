@@ -56,66 +56,72 @@ export default function generateProductCard(product, badgeText = null, options =
       </svg>
     `;
 
-    // ➡️ Gestion du clic sur le bouton +
-    btn.addEventListener('click', async event => {
-      event.stopPropagation(); // ⛔ Empêche le clic de se propager
-      event.preventDefault(); // ⛔ Empêche la redirection
+// ➡️ Gestion du clic sur le bouton +
+btn.addEventListener('click', async event => {
+  event.stopPropagation(); // ⛔ Empêche le clic de se propager
+  event.preventDefault(); // ⛔ Empêche la redirection
 
-      try {
-        // Récupération des tailles depuis l'API
-        const response = await fetch(`/api/products/${product.product_id}/sizes`);
-        const { sizes } = await response.json();
+  try {
+    // Récupération des tailles depuis l'API
+    const response = await fetch(`/api/products/${product.product_id}/sizes`);
+    const { sizes } = await response.json();
 
-        if (!sizes || sizes.length === 0) {
-          showToast("Aucune taille disponible pour ce produit.", "error");
-          return;
-        }
+    if (!sizes || sizes.length === 0) {
+      showToast("Aucune taille disponible pour ce produit.", "error");
+      return;
+    }
 
-        // ➡️ Si un dropdown est déjà ouvert, on le supprime
-        if (activeDropdown && activeDropdown !== imageContainer) {
-          const oldDropdown = activeDropdown.querySelector('.size-dropdown');
-          if (oldDropdown) oldDropdown.remove();
-        }
+    // ➡️ Si un dropdown est déjà ouvert, on le supprime
+    if (activeDropdown && activeDropdown !== imageContainer) {
+      const oldDropdown = activeDropdown.querySelector('.size-dropdown');
+      if (oldDropdown) oldDropdown.remove();
+    }
 
-        // Création du menu déroulant
-        const dropdown = document.createElement('div');
-        dropdown.className = `
-          absolute bg-white dark:bg-zinc-800 p-2 rounded-md shadow-lg z-50 size-dropdown
-        `;
-        dropdown.style.zIndex = '1000';
-        dropdown.style.right = '0';
-        dropdown.style.top = '40px';
-        dropdown.style.position = 'absolute';
-        dropdown.style.display = 'block';
+    // Création du menu déroulant
+    const dropdown = document.createElement('div');
+    dropdown.className = `
+      absolute bg-white dark:bg-zinc-800 p-2 rounded-md shadow-lg z-50 size-dropdown
+    `;
+    dropdown.style.zIndex = '1000';
+    dropdown.style.right = '0';
+    dropdown.style.top = '40px';
+    dropdown.style.position = 'absolute';
+    dropdown.style.display = 'block';
 
-        // Ajout des options
-        sizes.forEach(size => {
-          const option = document.createElement('div');
-          option.textContent = `${size.size_label} - (${size.stock_qty} en stock)`;
-          option.className = 'p-2 hover:bg-primary hover:text-white cursor-pointer';
-          option.addEventListener('click', event => {
-            event.stopPropagation();
-            event.preventDefault();
-            addToCart(product.product_id, size.size_label);
-            showToast(`Produit ajouté au panier : ${product.name} - ${size.size_label}`, 'success');
-            dropdown.remove();
-          });
-          dropdown.appendChild(option);
-        });
+    // Ajout des options
+    sizes.forEach(size => {
+      const option = document.createElement('div');
+      option.textContent = `${size.size_label} - (${size.stock_qty} en stock)`;
+      option.className = 'p-2 hover:bg-primary hover:text-white cursor-pointer';
 
-        // 🔥 Positionnement relatif pour le menu
-        imageContainer.style.position = 'relative';
-        imageContainer.style.overflow = 'visible';
-        imageContainer.appendChild(dropdown);
+      // ✅ Ici, on passe les bons paramètres à addToCart
+      option.addEventListener('click', event => {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        console.log("✅ Taille sélectionnée :", size); // 🔍 Ajout du log
 
-        // On garde la référence au dropdown actif
-        activeDropdown = imageContainer;
-
-      } catch (error) {
-        console.error("Erreur lors de la récupération des tailles :", error);
-        showToast("Erreur lors de la récupération des tailles.", "error");
-      }
+        // 🛒 On envoie l'ID et le label
+        addToCart(product.product_id, size.size_id, size.size_label);
+        showToast(`Produit ajouté au panier : ${product.name} - ${size.size_label}`, 'success');
+        dropdown.remove();
+      });
+      dropdown.appendChild(option);
     });
+
+    // 🔥 Positionnement relatif pour le menu
+    imageContainer.style.position = 'relative';
+    imageContainer.style.overflow = 'visible';
+    imageContainer.appendChild(dropdown);
+
+    // On garde la référence au dropdown actif
+    activeDropdown = imageContainer;
+
+  } catch (error) {
+    console.error("Erreur lors de la récupération des tailles :", error);
+    showToast("Erreur lors de la récupération des tailles.", "error");
+  }
+});
 
     imageContainer.appendChild(btn);
   }

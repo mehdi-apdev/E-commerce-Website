@@ -22,7 +22,6 @@ async function prefillUserData() {
   }
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
   initLayout(() => {
     renderCartSummary();
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('checkoutForm')?.addEventListener('submit', handleCheckoutSubmit);
 });
 
-/** Affiche le contenu du panier dans le résumé */
+/** 🔄 Affiche le contenu du panier dans le résumé */
 function renderCartSummary() {
   const cart = getCart();
   const container = document.getElementById('cart-summary');
@@ -44,6 +43,7 @@ function renderCartSummary() {
     return;
   }
 
+  // 🔎 Récupération des produits depuis l'API
   fetch('/api/products', {
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   })
@@ -53,17 +53,22 @@ function renderCartSummary() {
       let total = 0;
       container.innerHTML = '';
 
+      // 🔄 Parcours du panier
       getCart().forEach(item => {
-        const product = allProducts.find(p => p.product_id === item.product_id);
+        const product = allProducts.find(p => parseInt(p.product_id) === parseInt(item.product_id));
         if (!product) return;
 
+        // 🔎 On cherche la taille associée dans le produit
+        const sizeData = product.sizes ? product.sizes.find(size => parseInt(size.size_id) === parseInt(item.size_id)) : null;
+
+        // ✅ Prix récupéré depuis le produit directement
         const price = parseFloat(product.price) * item.quantity;
         total += price;
 
         container.innerHTML += `
           <div class="py-3 flex justify-between items-center">
             <div>
-              <p class="font-medium">${product.name}</p>
+              <p class="font-medium">${product.name} (${sizeData ? sizeData.size_label : item.size})</p>
               <p class="text-sm text-gray-500 dark:text-gray-400">Quantité : ${item.quantity}</p>
             </div>
             <p class="font-bold">${price.toFixed(2)} €</p>
@@ -71,6 +76,7 @@ function renderCartSummary() {
         `;
       });
 
+      // Affichage du total correctement formaté
       totalDisplay.textContent = `${total.toFixed(2)} €`;
     })
     .catch(err => {
@@ -79,7 +85,7 @@ function renderCartSummary() {
     });
 }
 
-/** Gère la soumission du formulaire */
+/** 🔄 Gère la soumission du formulaire */
 async function handleCheckoutSubmit(e) {
   e.preventDefault();
 
@@ -119,7 +125,15 @@ async function handleCheckoutSubmit(e) {
     return;
   }
 
-  const payload = { user: userInfo, cart };
+  // 🔎 Payload avec size_id pour chaque produit
+  const payload = {
+    user: userInfo,
+    cart: cart.map(item => ({
+      product_id: item.product_id,
+      size_id: item.size_id,
+      quantity: item.quantity
+    }))
+  };
 
   try {
     const res = await fetch('/api/checkout', {
@@ -131,7 +145,6 @@ async function handleCheckoutSubmit(e) {
       credentials: 'include',
       body: JSON.stringify(payload)
     });
-    
 
     const data = await res.json();
 
@@ -143,7 +156,7 @@ async function handleCheckoutSubmit(e) {
         total: data.total_amount.toFixed(2),
         address: `${userInfo.street} ${userInfo.number}, ${userInfo.postal_code} ${userInfo.city}`
       }));
-      window.location.href = '/checkout-success.html';      
+      window.location.href = '/checkout-success.html';
     } else {
       showToast((data.message || 'Erreur inconnue'), 'error');
     }

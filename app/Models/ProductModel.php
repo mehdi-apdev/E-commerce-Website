@@ -216,19 +216,23 @@ class ProductModel extends BaseModel {
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
     
-    public function decrementStock($productId, $qty): bool
+    public function decrementStock($productId, $sizeId, $qty): bool
     {
+        // Vérifier d'abord s'il y a suffisamment de stock pour la taille demandée
         $stmt = $this->pdo->prepare("
-            UPDATE products
-            SET stock = stock - :qty
-            WHERE product_id = :id AND stock >= :qty
+            UPDATE sizes
+            SET stock_qty = stock_qty - :qty
+            WHERE product_id = :product_id AND size_id = :size_id AND stock_qty >= :qty
         ");
         $stmt->execute([
-            'id' => $productId,
+            'product_id' => $productId,
+            'size_id' => $sizeId,
             'qty' => $qty
         ]);
+        
         return $stmt->rowCount() > 0;
     }
+    
 
     
 

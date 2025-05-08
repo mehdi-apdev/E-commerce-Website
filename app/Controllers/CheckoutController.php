@@ -19,6 +19,9 @@ class CheckoutController extends BaseController
 
         $input = json_decode(file_get_contents('php://input'), true);
 
+        // ➡️ Log des données reçues
+        file_put_contents('debug_checkout.log', "Données reçues:\n" . print_r($input, true) . "\n\n", FILE_APPEND);
+
         if (!$input || !isset($input['user']) || !isset($input['cart'])) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Données invalides']);
@@ -30,7 +33,7 @@ class CheckoutController extends BaseController
         if (!$userId) {
             $user = $this->getUserFromToken();
             if ($user) {
-                $userId = $user['user_id'];
+                $userId = $user['id']; // ✅ Correction ici
                 $_SESSION['user_id'] = $userId;
             }
         }
@@ -84,19 +87,45 @@ class CheckoutController extends BaseController
             $productsInfo = [];
 
             foreach ($cart as $item) {
+                // 🔎 Log pour vérifier les données de l'item
+                file_put_contents('debug_checkout.log', "Produit : " . print_r($item, true) . "\n\n", FILE_APPEND);
+
                 $product = $productModel->getValidProduct($item['product_id']);
 
-                if (!$product || $product['stock'] < $item['quantity']) {
-                    throw new \Exception("Produit invalide ou stock insuffisant");
+                if (!$product) {
+                    throw new \Exception("Produit invalide");
+                }
+
+                $sizeId = $item['size_id'];
+                $quantity = (int)$item['quantity'];
+
+                // Vérification du stock pour cette taille
+                $stmt = $this->pdo->prepare("SELECT stock_qty FROM sizes WHERE product_id = :product_id AND size_id = :size_id");
+                $stmt->execute([
+                    'product_id' => $item['product_id'],
+                    'size_id' => $sizeId
+                ]);
+
+                $sizeStock = $stmt->fetchColumn();
+
+                // 🔎 Log pour vérifier le stock
+                file_put_contents('debug_checkout.log', "Stock récupéré : $sizeStock pour produit {$item['product_id']} et taille {$sizeId}\n\n", FILE_APPEND);
+
+                if ($sizeStock === false) {
+                    throw new \Exception("Taille non trouvée dans la base de données");
+                }
+
+                if ($sizeStock < $quantity) {
+                    throw new \Exception("Stock insuffisant pour la taille sélectionnée");
                 }
 
                 $unitPrice = (float)$product['price'];
-                $quantity = (int)$item['quantity'];
                 $subtotal = $unitPrice * $quantity;
                 $total += $subtotal;
 
                 $productsInfo[] = [
                     'product_id' => $item['product_id'],
+                    'size_id' => $sizeId,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice
                 ];
@@ -113,22 +142,23 @@ class CheckoutController extends BaseController
             $orderId = $this->pdo->lastInsertId();
             if (!$orderId) throw new \Exception("Échec insertion commande");
 
-            // Ajoute les items
+            // Ajoute les items dans la commande
             $stmtItem = $this->pdo->prepare("
-                INSERT INTO order_items (order_id, product_id, quantity, unit_price)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO order_items (order_id, product_id, size_id, quantity, unit_price)
+                VALUES (?, ?, ?, ?, ?)
             ");
 
             foreach ($productsInfo as $product) {
                 $stmtItem->execute([
                     $orderId,
                     $product['product_id'],
+                    $product['size_id'],
                     $product['quantity'],
                     $product['unit_price']
                 ]);
 
-                // Décrémente le stock
-                if (!$productModel->decrementStock($product['product_id'], $product['quantity'])) {
+                // Décrémente le stock pour la taille correspondante
+                if (!$productModel->decrementStock($product['product_id'], $product['size_id'], $product['quantity'])) {
                     throw new \Exception("Stock insuffisant ou erreur update stock");
                 }
             }
@@ -145,6 +175,10 @@ class CheckoutController extends BaseController
         } catch (\Exception $e) {
             $this->pdo->rollBack();
             http_response_code(500);
+
+            // ➡️ Log de l'erreur
+            file_put_contents('debug_checkout.log', "Erreur : " . $e->getMessage() . "\n\n", FILE_APPEND);
+
             echo json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la commande',

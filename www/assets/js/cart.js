@@ -28,22 +28,31 @@ function saveCart(cart) {
 
 /** 
  * ➕ Ajoute un produit au panier (ou augmente la quantité) 
+ * @param {string} productId - L'ID du produit
+ * @param {number} sizeId - L'ID de la taille
+ * @param {string} sizeLabel - Le label de la taille (ex: "M", "L", "XL")
+ * @param {number} quantity - La quantité à ajouter
  */
-function addToCart(productId, size, quantity = 1) {
+function addToCart(productId, sizeId, sizeLabel, quantity = 1) {
   const cart = getCart();
-
-  // Conversion explicite en string pour éviter les erreurs de typage
+  
   productId = String(productId);
+  sizeId = parseInt(sizeId);
 
   // Recherche du produit par ID ET taille
-  const index = cart.findIndex(item => item.product_id === productId && item.size === size);
+  const index = cart.findIndex(item => item.product_id === productId && item.size_id === sizeId);
 
   if (index > -1) {
     // Si le produit existe déjà avec cette taille, on incrémente
     cart[index].quantity += quantity;
   } else {
     // Sinon, on l'ajoute
-    cart.push({ product_id: productId, size, quantity });
+    cart.push({
+      product_id: productId,
+      size_id: sizeId,      // 🆕 Ici on enregistre l'ID (important pour la base de données)
+      size_label: sizeLabel, // 🆕 Ici, on enregistre le label (utile pour l'affichage)
+      quantity
+    });
   }
 
   console.log("🛒 Panier mis à jour :", cart);
@@ -54,34 +63,41 @@ function addToCart(productId, size, quantity = 1) {
 
 /** 
  * 🔄 Met à jour la quantité d'un produit spécifique 
+ * @param {string} productId - L'ID du produit
+ * @param {number} sizeId - L'ID de la taille
+ * @param {number} newQty - La nouvelle quantité
  */
-function updateQuantity(productId, size, newQty) {
+function updateQuantity(productId, sizeId, newQty) {
   productId = String(productId); // Conversion explicite
+  sizeId = parseInt(sizeId);
+
   const cart = getCart().map(item =>
-    item.product_id === productId && item.size === size ? { ...item, quantity: newQty } : item
+    item.product_id === productId && item.size_id === sizeId 
+      ? { ...item, quantity: newQty } 
+      : item
   );
 
-  console.log(`🛒 Quantité mise à jour pour ${productId} (${size}) : ${newQty}`);
+  console.log(`🛒 Quantité mise à jour pour ${productId} (${sizeId}) : ${newQty}`);
   saveCart(cart);
   updateCartBadge();
 }
 
 /** 
  * ❌ Supprime un produit du panier 
+ * @param {string} productId - L'ID du produit
+ * @param {number} sizeId - L'ID de la taille
  */
-function removeFromCart(productId, size) {
+function removeFromCart(productId, sizeId) {
   productId = String(productId); // Conversion explicite
+  sizeId = parseInt(sizeId);
+
   const cart = getCart();
-  
-  console.log("📌 Contenu avant suppression :", cart);
 
   const updatedCart = cart.filter(item => {
-    const match = item.product_id === productId && item.size === size;
-    console.log(`Comparaison : ${item.product_id} === ${productId} && ${item.size} === ${size} -> ${!match}`);
+    const match = item.product_id === productId && item.size_id === sizeId;
+    console.log(`🗑️ Comparaison : ${item.product_id} === ${productId} && ${item.size_id} === ${sizeId} -> ${!match}`);
     return !match;
   });
-
-  console.log("📌 Contenu après suppression :", updatedCart);
 
   saveCart(updatedCart);
   updateCartBadge();
