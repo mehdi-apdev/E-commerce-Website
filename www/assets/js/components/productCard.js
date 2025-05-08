@@ -99,8 +99,6 @@ btn.addEventListener('click', async event => {
         event.stopPropagation();
         event.preventDefault();
         
-        console.log("✅ Taille sélectionnée :", size); // 🔍 Ajout du log
-
         // 🛒 On envoie l'ID et le label
         addToCart(product.product_id, size.size_id, size.size_label);
         showToast(`Produit ajouté au panier : ${product.name} - ${size.size_label}`, 'success');

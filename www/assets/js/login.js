@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const raw = await response.text();
-      console.log("Réponse brute : ", raw);
-
       try {
         const result = JSON.parse(raw);
         if (result.success) {

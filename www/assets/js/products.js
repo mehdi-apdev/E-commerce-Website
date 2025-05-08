@@ -172,7 +172,6 @@ function loadProducts(page = 1) {
   // 🔍 Ajout du filtre par taille
   if (size) url.searchParams.set('size', size);
 
-  console.log("🔎 URL API générée :", url.toString()); // ➡️ Vérification de l'URL
 
   fetch(url)
     .then(res => {
@@ -180,7 +179,6 @@ function loadProducts(page = 1) {
       return res.json();
     })
     .then(data => {
-      console.log("🔍 Résultat API :", data); // ➡️ Vérification de la réponse
       renderProducts(data.products || []);
       renderPagination(data.totalPages || 1, data.currentPage || 1);
     })

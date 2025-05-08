@@ -80,13 +80,16 @@ class UserModel extends BaseModel {
         $stmt->bindValue(':id', $userId);
         $stmt->execute();
     }
-
     public function updateProfile($userId, $firstName, $lastName, $phone, $password = '')
     {
+    
         if (!empty($password)) {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        
             $sql = "UPDATE users SET first_name = :first_name, last_name = :last_name, phone = :phone, password = :password WHERE user_id = :id";
             $stmt = $this->pdo->prepare($sql);
+    
+
             $stmt->execute([
                 ':first_name' => $firstName,
                 ':last_name' => $lastName,
@@ -95,8 +98,10 @@ class UserModel extends BaseModel {
                 ':id' => $userId
             ]);
         } else {
+    
             $sql = "UPDATE users SET first_name = :first_name, last_name = :last_name, phone = :phone WHERE user_id = :id";
             $stmt = $this->pdo->prepare($sql);
+    
             $stmt->execute([
                 ':first_name' => $firstName,
                 ':last_name' => $lastName,
@@ -105,6 +110,8 @@ class UserModel extends BaseModel {
             ]);
         }
     }
+    
+    
 
     public function updateRememberToken(int $userId, string $token): void {
         $stmt = $this->pdo->prepare("UPDATE users SET remember_token = :token WHERE user_id = :id");

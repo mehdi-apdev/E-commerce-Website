@@ -61,8 +61,6 @@ abstract class BaseController
                     'email' => $user['email']
                 ];
     
-                // 🔎 Log temporaire pour vérifier que ça fonctionne
-                file_put_contents('debug.log', print_r($_SESSION, true));
                 
                 return $_SESSION['user'];
             }

@@ -19,9 +19,6 @@ class CheckoutController extends BaseController
 
         $input = json_decode(file_get_contents('php://input'), true);
 
-        // ➡️ Log des données reçues
-        file_put_contents('debug_checkout.log', "Données reçues:\n" . print_r($input, true) . "\n\n", FILE_APPEND);
-
         if (!$input || !isset($input['user']) || !isset($input['cart'])) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Données invalides']);
@@ -87,9 +84,7 @@ class CheckoutController extends BaseController
             $productsInfo = [];
 
             foreach ($cart as $item) {
-                // 🔎 Log pour vérifier les données de l'item
-                file_put_contents('debug_checkout.log', "Produit : " . print_r($item, true) . "\n\n", FILE_APPEND);
-
+                
                 $product = $productModel->getValidProduct($item['product_id']);
 
                 if (!$product) {
@@ -107,9 +102,6 @@ class CheckoutController extends BaseController
                 ]);
 
                 $sizeStock = $stmt->fetchColumn();
-
-                // 🔎 Log pour vérifier le stock
-                file_put_contents('debug_checkout.log', "Stock récupéré : $sizeStock pour produit {$item['product_id']} et taille {$sizeId}\n\n", FILE_APPEND);
 
                 if ($sizeStock === false) {
                     throw new \Exception("Taille non trouvée dans la base de données");
@@ -175,9 +167,6 @@ class CheckoutController extends BaseController
         } catch (\Exception $e) {
             $this->pdo->rollBack();
             http_response_code(500);
-
-            // ➡️ Log de l'erreur
-            file_put_contents('debug_checkout.log', "Erreur : " . $e->getMessage() . "\n\n", FILE_APPEND);
 
             echo json_encode([
                 'success' => false,

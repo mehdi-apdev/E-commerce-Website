@@ -115,13 +115,6 @@ form?.addEventListener('submit', async (e) => {
   // 🟢 On ajoute ce tableau JSON directement au FormData
   formData.append('sizes', JSON.stringify(sizesArray));
 
-  // 🔍 Vérification console
-  console.log("=== Données envoyées au serveur ===");
-  formData.forEach((value, key) => {
-    console.log(`${key}: ${value}`);
-  });
-  console.log("=== Fin des données ===");
-
   try {
     const response = await fetch(url, {
       method: 'POST',

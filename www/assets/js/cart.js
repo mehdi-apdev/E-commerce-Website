@@ -55,7 +55,6 @@ function addToCart(productId, sizeId, sizeLabel, quantity = 1) {
     });
   }
 
-  console.log("🛒 Panier mis à jour :", cart);
 
   saveCart(cart);
   updateCartBadge();
@@ -77,7 +76,6 @@ function updateQuantity(productId, sizeId, newQty) {
       : item
   );
 
-  console.log(`🛒 Quantité mise à jour pour ${productId} (${sizeId}) : ${newQty}`);
   saveCart(cart);
   updateCartBadge();
 }
@@ -95,7 +93,6 @@ function removeFromCart(productId, sizeId) {
 
   const updatedCart = cart.filter(item => {
     const match = item.product_id === productId && item.size_id === sizeId;
-    console.log(`🗑️ Comparaison : ${item.product_id} === ${productId} && ${item.size_id} === ${sizeId} -> ${!match}`);
     return !match;
   });
 
