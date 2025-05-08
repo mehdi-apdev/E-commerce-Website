@@ -25,47 +25,45 @@ class ProductModel extends BaseModel {
         string $orderBy = 'created_at',
         string $direction = 'DESC',
         ?int $limit = null,
-        ?int $offset = null
+        ?int $offset = null,
+        ?string $sizeLabel = null
     ): array {
-        // Champs autorisés pour le tri
-        $allowedFields = ['created_at','price','name','sales_count'];
+        $allowedFields = ['created_at', 'price', 'name', 'sales_count'];
         if (!in_array($orderBy, $allowedFields)) {
             $orderBy = 'created_at';
         }
         $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
     
-        // Requête SQL
         $sql = "
-          SELECT
-            p.*,
-            c.name AS category_name,
-            col.name AS color_name,
-            f.name AS fabric_name,
-            r.name AS region_name,
-            (
-              SELECT SUM(oi.quantity)
-              FROM order_items oi
-              WHERE oi.product_id = p.product_id
-            ) AS sales_count,
-            (
-              SELECT filename
-              FROM product_images
-              WHERE product_id = p.product_id
-                AND is_main = 1
-              LIMIT 1
-            ) AS main_image
-          FROM products p
-          LEFT JOIN categories c ON p.category_id = c.category_id
-          LEFT JOIN colors col ON p.color_id = col.color_id
-          LEFT JOIN fabrics f ON p.fabric_id = f.fabric_id
-          LEFT JOIN cultural_regions r ON p.cultural_region_id = r.region_id
-          WHERE 1=1
+            SELECT DISTINCT p.*, 
+                            c.name AS category_name, 
+                            col.name AS color_name, 
+                            f.name AS fabric_name, 
+                            r.name AS region_name,
+                            (
+                                SELECT SUM(oi.quantity)
+                                FROM order_items oi
+                                WHERE oi.product_id = p.product_id
+                            ) AS sales_count,
+                            (
+                                SELECT filename
+                                FROM product_images
+                                WHERE product_id = p.product_id
+                                AND is_main = 1
+                                LIMIT 1
+                            ) AS main_image
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            LEFT JOIN colors col ON p.color_id = col.color_id
+            LEFT JOIN fabrics f ON p.fabric_id = f.fabric_id
+            LEFT JOIN cultural_regions r ON p.cultural_region_id = r.region_id
+            LEFT JOIN sizes s ON s.product_id = p.product_id
+            WHERE 1=1
         ";
     
-        // On prépare un tableau de paramètres pour le bind
         $params = [];
     
-        // 1) Filtres
+        // ✅ Application des filtres
         if (!empty($filters['category_id'])) {
             $sql .= " AND p.category_id = :category_id";
             $params['category_id'] = $filters['category_id'];
@@ -82,35 +80,38 @@ class ProductModel extends BaseModel {
             $sql .= " AND p.cultural_region_id = :region";
             $params['region'] = $filters['cultural_region_id'];
         }
-        // Exemple si tu gères la taille dans une table `sizes` : tu ferais un JOIN ou un WHERE
-        // if (!empty($filters['size_label'])) { ... }
     
-        // 2) Tri
+        // ✅ Ajout du filtre de taille
+        if (!empty($sizeLabel)) {
+            $sql .= " AND s.size_label = :size_label";
+            $params['size_label'] = $sizeLabel;
+        }
+    
         $sql .= " ORDER BY p.$orderBy $direction";
     
-        // 3) Pagination
         if ($limit !== null) {
             $sql .= " LIMIT :limit OFFSET :offset";
         }
     
-        // Préparation
+        // ✅ Préparation de la requête
         $stmt = $this->pdo->prepare($sql);
     
-        // Bind des filtres
+        // ✅ Bind des filtres
         foreach ($params as $key => $val) {
             $paramType = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue(":$key", $val, $paramType);
         }
-        // Bind pagination
+    
+        // ✅ Bind pagination
         if ($limit !== null) {
             $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         }
     
-        // Exécution
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     
     /**
      * Compte le nombre total de produits correspondant aux filtres, 
@@ -142,18 +143,22 @@ class ProductModel extends BaseModel {
             $sql .= " AND p.cultural_region_id = :region";
             $params['region'] = $filters['cultural_region_id'];
         }
-        // Idem pour la taille etc.
-    
+        // 🔎 Filtrage par taille
+        if (!empty($filters['size_label'])) {
+            $sql .= " AND s.size_label = :size_label";
+            $params['size_label'] = $filters['size_label'];
+        }
+
         // Préparation
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $val) {
             $paramType = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue(":$key", $val, $paramType);
         }
-    
+
         $stmt->execute();
         return (int) $stmt->fetchColumn();
-    }
+}
     
 
     public function getDetailedProductById(int $id): ?array

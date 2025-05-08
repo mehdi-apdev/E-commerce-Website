@@ -52,9 +52,70 @@ async function loadFilterOptions() {
   await loadOptions('/api/categories', 'category', 'category_id');
   await loadOptions('/api/colors', 'color', 'color_id');
   await loadOptions('/api/fabrics', 'fabric', 'fabric_id');
-  await loadOptions('/api/sizes', 'size', 'size_label');
   await loadOptions('/api/regions', 'region', 'region_id');
+
+  // On ne récupère plus les tailles globalement, mais depuis les produits
+  await loadSizeOptions();
 }
+
+async function loadSizeOptions() {
+  const select = document.getElementById('size');
+  if (!select) return;
+
+  select.innerHTML = `<option value="">Toutes</option>`;
+
+  try {
+    const res = await fetch('/api/products', {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const data = await res.json();
+
+    const products = data.products || [];
+
+    // Création d'un Set pour éviter les doublons
+    const sizes = new Set();
+
+    products.forEach(product => {
+      if (product.sizes) {
+        product.sizes.forEach(size => sizes.add(size.size_label));
+      }
+    });
+
+    // 🔎 On trie les tailles de manière naturelle
+    const naturalOrder = ["XS", "S", "M", "L", "XL", "XXL"];
+    const sortedSizes = Array.from(sizes).sort((a, b) => {
+      const indexA = naturalOrder.indexOf(a);
+      const indexB = naturalOrder.indexOf(b);
+
+      if (indexA === -1 && indexB === -1) {
+        return a.localeCompare(b);
+      } else if (indexA === -1) {
+        return 1;
+      } else if (indexB === -1) {
+        return -1;
+      }
+      return indexA - indexB;
+    });
+
+    // Ajout au Select trié
+    sortedSizes.forEach(sizeLabel => {
+      const option = document.createElement('option');
+      option.value = sizeLabel;
+      option.textContent = sizeLabel;
+      select.appendChild(option);
+    });
+
+    // Réagir au changement de taille
+    select.addEventListener('change', () => loadProducts(1));
+
+  } catch (err) {
+    console.error(`Erreur fetch tailles:`, err);
+    showToast(`Erreur lors du chargement des tailles`, 'error');
+  }
+}
+
+
+
 
 async function loadOptions(endpoint, elementId, valueKey) {
   const select = document.getElementById(elementId);
@@ -104,10 +165,14 @@ function loadProducts(page = 1) {
   if (category) url.searchParams.set('category', category);
   if (color) url.searchParams.set('color', color);
   if (fabric) url.searchParams.set('fabric', fabric);
-  if (size) url.searchParams.set('size', size);
   if (region) url.searchParams.set('region', region);
   if (orderBy) url.searchParams.set('orderBy', orderBy);
   if (direction) url.searchParams.set('direction', direction);
+
+  // 🔍 Ajout du filtre par taille
+  if (size) url.searchParams.set('size', size);
+
+  console.log("🔎 URL API générée :", url.toString()); // ➡️ Vérification de l'URL
 
   fetch(url)
     .then(res => {
@@ -115,6 +180,7 @@ function loadProducts(page = 1) {
       return res.json();
     })
     .then(data => {
+      console.log("🔍 Résultat API :", data); // ➡️ Vérification de la réponse
       renderProducts(data.products || []);
       renderPagination(data.totalPages || 1, data.currentPage || 1);
     })
@@ -128,6 +194,8 @@ function loadProducts(page = 1) {
       `;
     });
 }
+
+
 
 function renderProducts(products) {
   productsContainer.innerHTML = '';

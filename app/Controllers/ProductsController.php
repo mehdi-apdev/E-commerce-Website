@@ -90,16 +90,17 @@ class ProductsController extends BaseController
             if (!empty($color))    $filters['color_id'] = (int)$color;
             if (!empty($fabric))   $filters['fabric_id'] = (int)$fabric;
             if (!empty($region))   $filters['cultural_region_id'] = (int)$region;
-            if (!empty($size))     $filters['size_label'] = $size;
-    
-            // 3) Requête
+
+            // 3) On passe la taille séparément dans la méthode
             $products = $this->productModel->getDetailedProducts(
                 $filters,
                 $orderBy,
                 $direction,
                 $limit,
-                $offset
+                $offset,
+                $size // 🔄 ajout du filtre taille
             );
+
     
             $totalCount = $this->productModel->countFiltered($filters);
             $totalPages = ceil($totalCount / $limit);

@@ -73,5 +73,5 @@ www/index.html
 # ====================
 # Ignorer les fichiers txt et zip
 # ====================
-.txt
-.zip
+*.txt
+*.zip
