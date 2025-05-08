@@ -1,9 +1,0 @@
-https://amarna.ovh
-
-Compte admin :
-test1@hotmail.com
-123456789
-
-compte user :
-test2@hotmail.com
-987654321
