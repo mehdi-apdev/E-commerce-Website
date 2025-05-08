@@ -71,6 +71,7 @@ $router->post('/api/auth/registerPost', [AuthController::class, 'registerPost'])
 $router->post('/api/auth/loginPost', [AuthController::class, 'loginPost']);
 $router->get('/api/auth/me', [AuthController::class, 'me']);
 $router->post('/api/auth/logout', [AuthController::class, 'logout']);
+$router->get('/api/profile/orders', [ProfileController::class, 'getOrders']);
 $router->get('/api/auth/getProfile', [ProfileController::class, 'getProfile']);
 $router->post('/api/auth/updateProfile', [ProfileController::class, 'updateProfile']);
 

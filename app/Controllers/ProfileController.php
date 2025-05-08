@@ -3,15 +3,18 @@ namespace App\Controllers;
 
 use App\Core\BaseController;
 use App\Models\UserModel;
+use App\Models\OrderModel;
 
 class ProfileController extends BaseController
 {
     private $userModel;
+    private $orderModel;
 
     public function __construct()
     {
         parent::__construct();
         $this->userModel = new UserModel($this->pdo);
+        $this->orderModel = new OrderModel($this->pdo);
     }
 
     public function getProfile()
@@ -94,5 +97,41 @@ class ProfileController extends BaseController
         echo json_encode(['success' => true, 'message' => 'Profil mis à jour avec succès.']);
     }
     
+        /**
+     * Récupère les commandes de l'utilisateur connecté
+     * GET /api/profile/orders
+     */
+    public function getOrders()
+    {
+        header('Content-Type: application/json');
+
+        // 🔎 Vérification de la session utilisateur
+        $userSession = $_SESSION['user'] ?? $this->getUserFromToken();
+
+        if (!$userSession || empty($userSession['id'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Non autorisé. Veuillez vous reconnecter.']);
+            return;
+        }
+
+        $userId = $userSession['id'];
+
+        try {
+            // 🔎 Récupération des commandes via le modèle
+            $orders = $this->orderModel->getOrdersByUserId($userId);
+
+            echo json_encode([
+                'success' => true,
+                'orders' => $orders
+            ]);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des commandes',
+                'debug' => $e->getMessage()
+            ]);
+        }
+    }
     
 }

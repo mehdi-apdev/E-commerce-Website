@@ -1,11 +1,9 @@
-// www/assets/js/profile.js
 import { initLayout, showToast } from './common.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Injecte header, footer, thème et panier, puis exécute le reste
   initLayout(() => {
     fetchUserInfo();
-
+    fetchOrders(); // 🚀 Ajout de la récupération des commandes
     document.getElementById('update-profile-btn')?.addEventListener('click', updateProfile);
     document.getElementById('logout-btn')?.addEventListener('click', logout);
   });
@@ -20,12 +18,9 @@ function fetchUserInfo() {
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
     },
-    credentials: 'include' // 🔥 Permet d'envoyer les cookies de session
+    credentials: 'include'
   })
-    .then(res => {
-      if (!res.ok) throw new Error(`Erreur ${res.status}: ${res.statusText}`);
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
       if (data.success && data.user) {
         const { first_name, last_name, email, phone } = data.user;
@@ -37,7 +32,7 @@ function fetchUserInfo() {
         showToast('Utilisateur non connecté ou non trouvé', 'error');
         setTimeout(() => {
           window.location.href = '/login.html';
-        }, 1500);        
+        }, 1500);
       }
     })
     .catch(err => {
@@ -45,6 +40,75 @@ function fetchUserInfo() {
       showToast('Erreur lors de la récupération des informations.', 'error');
     });
 }
+
+/**
+ * 🔄 Récupération des commandes de l'utilisateur
+ */
+function fetchOrders() {
+  fetch('/api/profile/orders', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    credentials: 'include'
+  })
+    .then(res => res.json())
+    .then(data => {
+      const ordersContainer = document.getElementById('orders-list');
+      if (data.success && data.orders.length > 0) {
+        ordersContainer.innerHTML = '';
+        data.orders.forEach(order => {
+          ordersContainer.innerHTML += generateOrderCard(order);
+        });
+      } else {
+        ordersContainer.innerHTML = `<p class="text-gray-600 dark:text-gray-400">Aucune commande trouvée.</p>`;
+      }
+    })
+    .catch(err => {
+      console.error('Erreur lors de la récupération des commandes:', err.message);
+      showToast('Erreur lors de la récupération des commandes.', 'error');
+    });
+}
+
+/**
+ * 🛍️ Génération de la carte de commande
+ */
+function generateOrderCard(order) {
+  const itemsHtml = order.items.map(item => `
+    <div class="flex items-center space-x-4">
+      <img src="/uploads/products/${item.product_id}/${item.product_image.trim()}" 
+           alt="${item.product_name}" 
+           class="w-16 h-16 object-cover rounded">
+      <div>
+        <p class="font-semibold">${item.product_name}</p>
+        <p class="text-sm text-gray-500">Taille : ${item.size_label}</p>
+        <p class="text-sm text-gray-500">Quantité : ${item.quantity}</p>
+      </div>
+      <div class="ml-auto font-semibold">${parseFloat(item.price).toFixed(2)} €</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="bg-white dark:bg-zinc-800 p-4 rounded shadow mb-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <p class="font-semibold">Commande #${order.order_id}</p>
+          <p class="text-sm text-gray-500">${new Date(order.created_at).toLocaleDateString()}</p>
+        </div>
+        <div class="text-primary font-bold">${parseFloat(order.total_amount).toFixed(2)} €</div>
+      </div>
+      <div class="mt-4 space-y-2">
+        ${itemsHtml}
+      </div>
+      <div class="mt-4 text-right">
+        <span class="px-3 py-1 rounded-full text-sm ${order.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+          ${order.status === 'completed' ? 'Complétée' : 'En cours'}
+        </span>
+      </div>
+    </div>
+  `;
+}
+
 
 /**
  * Mise à jour du profil utilisateur
@@ -57,7 +121,6 @@ function updateProfile() {
     password: document.getElementById('password').value.trim(),
   };
 
-  // Construction du FormData
   const formData = new FormData();
   for (let key in form) {
     if (form[key]) formData.append(key, form[key]);
@@ -73,7 +136,7 @@ function updateProfile() {
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
     },
-    credentials: 'include' // 🔥 Permet d'envoyer les cookies de session
+    credentials: 'include'
   })
     .then(async res => {
       if (res.status === 401) {
@@ -88,7 +151,7 @@ function updateProfile() {
     .then(data => {
       if (data.success) {
         showToast('Profil mis à jour avec succès', 'success');
-        fetchUserInfo(); // 🔄 On rafraîchit les données
+        fetchUserInfo();
       } else if (data.errors) {
         showToast(Object.values(data.errors).join(' / '), 'error');
       } else {
@@ -114,7 +177,7 @@ function logout() {
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
     },
-    credentials: 'include' // 🔥 Envoie les cookies pour bien détruire la session
+    credentials: 'include'
   })
     .then(res => {
       if (!res.ok) throw new Error('Erreur lors de la déconnexion');
