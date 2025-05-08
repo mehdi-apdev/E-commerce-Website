@@ -75,5 +75,12 @@ $router->get('/api/profile/orders', [ProfileController::class, 'getOrders']);
 $router->get('/api/auth/getProfile', [ProfileController::class, 'getProfile']);
 $router->post('/api/auth/updateProfile', [ProfileController::class, 'updateProfile']);
 
+// Adresses de livraison
+$router->post('/api/profile/addresses', [ProfileController::class, 'addShippingAddress']);
+$router->put('/api/profile/addresses/{id}', [ProfileController::class, 'updateShippingAddress']);
+$router->delete('/api/profile/addresses/{id}', [ProfileController::class, 'deleteShippingAddress']);
+$router->get('/api/profile/addresses', [ProfileController::class, 'getShippingAddresses']);
+
+
 // Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

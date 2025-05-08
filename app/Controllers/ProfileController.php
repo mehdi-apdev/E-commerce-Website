@@ -133,5 +133,98 @@ class ProfileController extends BaseController
             ]);
         }
     }
+
+    public function getShippingAddresses()
+    {
+        header('Content-Type: application/json');
+    
+        $userSession = $_SESSION['user'] ?? $this->getUserFromToken();
+    
+        if (!$userSession || empty($userSession['id'])) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Non autorisé']);
+            return;
+        }
+    
+        try {
+            $shippingAddressModel = new \App\Models\ShippingAddressModel($this->pdo);
+            $addresses = $shippingAddressModel->getAddressesByUserId($userSession['id']);
+            
+            echo json_encode([
+                'success' => true,
+                'addresses' => $addresses
+            ]);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des adresses',
+                'debug' => $e->getMessage()
+            ]);
+        }
+    }
+    
+    public function addShippingAddress()
+    {
+        header('Content-Type: application/json');
+        
+        $userSession = $_SESSION['user'] ?? $this->getUserFromToken();
+        
+        if (!$userSession || empty($userSession['id'])) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Non autorisé']);
+            return;
+        }
+    
+        $addressData = [
+            'user_id' => $userSession['id'],
+            'recipient_name' => $_POST['recipient_name'] ?? '',
+            'street' => $_POST['street'] ?? '',
+            'number' => $_POST['number'] ?? '',
+            'postal_code' => $_POST['postal_code'] ?? '',
+            'city' => $_POST['city'] ?? '',
+            'region' => $_POST['region'] ?? '',
+            'country' => $_POST['country'] ?? '',
+            'is_default' => isset($_POST['is_default']) ? 1 : 0
+        ];
+    
+        $model = new \App\Models\ShippingAddressModel($this->pdo);
+        $success = $model->createAddress($addressData);
+    
+        echo json_encode(['success' => $success]);
+    }
+    
+    public function updateShippingAddress(int $id)
+    {
+        header('Content-Type: application/json');
+    
+        $model = new \App\Models\ShippingAddressModel($this->pdo);
+    
+        $addressData = [
+            'recipient_name' => $_POST['recipient_name'] ?? '',
+            'street' => $_POST['street'] ?? '',
+            'number' => $_POST['number'] ?? '',
+            'postal_code' => $_POST['postal_code'] ?? '',
+            'city' => $_POST['city'] ?? '',
+            'region' => $_POST['region'] ?? '',
+            'country' => $_POST['country'] ?? '',
+            'is_default' => isset($_POST['is_default']) ? 1 : 0
+        ];
+    
+        $success = $model->updateAddress($id, $addressData);
+    
+        echo json_encode(['success' => $success]);
+    }
+    
+    public function deleteShippingAddress(int $id)
+    {
+        header('Content-Type: application/json');
+    
+        $model = new \App\Models\ShippingAddressModel($this->pdo);
+        $success = $model->deleteAddress($id);
+    
+        echo json_encode(['success' => $success]);
+    }
+    
     
 }
